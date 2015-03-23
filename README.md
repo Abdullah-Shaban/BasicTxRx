@@ -6,7 +6,7 @@ The Wireless Testbed Academy contains source code that can be run on open wirele
 * TUB [TWIST](http://www.twist.tu-berlin.de/wiki)
 * TCD IRIS
 * TUD
-* JSI (LOG-a-TEC)(http://log-a-tec.eu/overview.html)
+* JSI [LOG-a-TEC](http://log-a-tec.eu/overview.html)
 
 
 Simple transmit source code
