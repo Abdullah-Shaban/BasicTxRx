@@ -9,11 +9,13 @@ The `logatec.py` script performs a simple spectrum sensing experiment in
 the 2.4 GHz band on a sensor node in the City Center cluster of the LOG-a-TEC
 testbed.
 
-Requirements:
+Experiments running on LOG-a-TEC testbed are controlled over the Internet from
+a Python script running on the user's computer. To run an experiment, you need
+the following installed on your system:
 
- * Python 2.x.
- * [vesna-alh-tools](https://github.com/sensorlab/vesna-alh-tools) need to be installed.
- * A valid username and password for the LOG-a-TEC testbed (see vesna-alh-tools
+ * Python 2.x. (usually already installed on Linux systems),
+ * [vesna-alh-tools](https://github.com/sensorlab/vesna-alh-tools) and
+ * a valid username and password for the LOG-a-TEC testbed (see vesna-alh-tools
    README on how to set it up).
 
 To run the experiment, use:
