@@ -1,7 +1,7 @@
 Simple transmit example
 ===================
 
-TCD
+TCD 
 -----
 
 The 'ofdm_tx_file_to_usrp.xml' file implements a simple OFDM transmitter in Iris.
