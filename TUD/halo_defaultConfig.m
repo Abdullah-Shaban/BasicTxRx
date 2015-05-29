@@ -25,11 +25,11 @@ if strcmp(mode, 'halo')
     
     %% RX Parameter                                        
     halo.rx.type = 150;
-    halo.rx.id = 1;     
+    halo.rx.id = 2;     
     halo.rx.carrier_frequency = 1990000000;
     halo.rx.gain = 0;
     halo.rx.clock = 'internal';
-    halo.rx.device = '192.168.200.90';      %Sometimes a RX Application can control serveral units
+    halo.rx.device = '192.168.200.91';      %Sometimes a RX Application can control serveral units
                                             %USRP: enter IP-Adresse
                                             %PXI: enter name of the fpga
     halo.rx.samplerate = 1000000;
