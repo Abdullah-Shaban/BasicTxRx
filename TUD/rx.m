@@ -5,6 +5,9 @@
 %% init RX Hardware    
 halo_init_rx(halo); 
 
+%% run RX and make sure it does!
+halo_start_rx(halo);
+
 %% Receive signal
 rec = halo_getSignal(halo);
 % It could be empty, if something went wrong

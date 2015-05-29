@@ -1,8 +1,6 @@
 function [ halo ] = halo_defaultConfig(mode )
-%Add path to HALO library provided by TUD
-addpath(genpath('HALO'));
-%Add path to UDP library provided by TUD
-addpath(genpath('TestMan'));
+%Add path to librarys provided by TUD
+addpath(genpath('C:\sync\global\Library\Matlab'));
 
 %Different halo modes available:
 if strcmp(mode, 'halo')    
@@ -20,18 +18,18 @@ if strcmp(mode, 'halo')
     halo.tx.samplerate = 1000000;
     halo.tx.gain = 0;
     halo.tx.clock = 'internal';
-    halo.tx.device = '192.168.200.95';      %Sometimes a TX Application can control serveral units
+    halo.tx.device = '192.168.200.90';      %Sometimes a TX Application can control serveral units
                                             %USRP: enter IP-Adresse
                                             %PXI: enter name of the fpga
     halo.tx.buffer_size = 1000000;          %Length of the transamitted data
     
     %% RX Parameter                                        
     halo.rx.type = 150;
-    halo.rx.id = 2;     
+    halo.rx.id = 1;     
     halo.rx.carrier_frequency = 1990000000;
     halo.rx.gain = 0;
     halo.rx.clock = 'internal';
-    halo.rx_device = '192.168.200.94';      %Sometimes a RX Application can control serveral units
+    halo.rx.device = '192.168.200.90';      %Sometimes a RX Application can control serveral units
                                             %USRP: enter IP-Adresse
                                             %PXI: enter name of the fpga
     halo.rx.samplerate = 1000000;
