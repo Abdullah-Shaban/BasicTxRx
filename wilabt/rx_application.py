@@ -2,7 +2,7 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Rx Application
-# Generated: Thu Aug 20 11:48:03 2015
+# Generated: Thu Aug 20 17:18:09 2015
 ##################################################
 
 if __name__ == '__main__':
@@ -69,10 +69,10 @@ class rx_application(gr.top_block, Qt.QWidget):
         self.rrc_taps = rrc_taps = firdes.root_raised_cosine(nfilts, nfilts, 1.0/float(sps), eb, 5*sps*nfilts)
         self.preamble = preamble = [1,-1,1,-1,1,1,-1,-1,1,1,-1,1,1,1,-1,1,1,-1,1,-1,-1,1,-1,-1,1,1,1,-1,-1,-1,1,-1,1,1,1,1,-1,-1,1,-1,1,-1,-1,-1,1,1,-1,-1,-1,-1,1,-1,-1,-1,-1,-1,1,1,1,1,1,1,-1,-1]
         self.matched_filter = matched_filter = firdes.root_raised_cosine(nfilts, nfilts, 1, eb, int(11*sps*nfilts))
-        self.gain = gain = 20
-        self.digital_gain = digital_gain = 25
+        self.gain = gain = 30
+        self.digital_gain = digital_gain = 30
         self.constel = constel = digital.constellation_calcdist(([1,- 1]), ([0,1]), 2, 1).base()
-        self.addr = addr = "addr=192.168.10.2"
+        self.addr = addr = "addr=192.168.20.2"
 
         ##################################################
         # Blocks
@@ -80,10 +80,10 @@ class rx_application(gr.top_block, Qt.QWidget):
         self._usrp_rf_freq_range = Range(2400e6, 2500e6, 100e3, 2495e6, 200)
         self._usrp_rf_freq_win = RangeWidget(self._usrp_rf_freq_range, self.set_usrp_rf_freq, "Rx Frequency", "counter_slider")
         self.top_grid_layout.addWidget(self._usrp_rf_freq_win, 3,0,1,2)
-        self._gain_range = Range(0, 31.5, 0.5, 20, 200)
+        self._gain_range = Range(0, 40, 0.5, 30, 200)
         self._gain_win = RangeWidget(self._gain_range, self.set_gain, "Rx Gain", "counter_slider")
         self.top_grid_layout.addWidget(self._gain_win, 2,0,1,1)
-        self._digital_gain_range = Range(0, 60, 1, 25, 200)
+        self._digital_gain_range = Range(0, 60, 1, 30, 200)
         self._digital_gain_win = RangeWidget(self._digital_gain_range, self.set_digital_gain, "Digital Gain", "counter_slider")
         self.top_grid_layout.addWidget(self._digital_gain_win, 2,1,1,1)
         self.uhd_usrp_source_0 = uhd.usrp_source(
@@ -235,7 +235,7 @@ class rx_application(gr.top_block, Qt.QWidget):
         self.digital_correlate_and_sync_cc_0 = digital.correlate_and_sync_cc((preamble), (matched_filter), sps)
         self.crew_packet_decoder_cb_0 = crew.packet_decoder_cb((preamble))
         self.blocks_multiply_const_vxx_0 = blocks.multiply_const_vcc((digital_gain, ))
-        self.blocks_file_sink_0 = blocks.file_sink(gr.sizeof_char*1, "/home/lwei/Documents/grflowchart/file_received.txt", False)
+        self.blocks_file_sink_0 = blocks.file_sink(gr.sizeof_char*1, "/users/lwei/file_received.txt", False)
         self.blocks_file_sink_0.set_unbuffered(False)
         self.blocks_complex_to_mag_0 = blocks.complex_to_mag(1)
         self.blocks_complex_to_float_0 = blocks.complex_to_float(1)
@@ -268,24 +268,24 @@ class rx_application(gr.top_block, Qt.QWidget):
 
     def set_sps(self, sps):
         self.sps = sps
-        self.set_rrc_taps(firdes.root_raised_cosine(self.nfilts, self.nfilts, 1.0/float(self.sps), self.eb, 5*self.sps*self.nfilts))
         self.set_matched_filter(firdes.root_raised_cosine(self.nfilts, self.nfilts, 1, self.eb, int(11*self.sps*self.nfilts)))
+        self.set_rrc_taps(firdes.root_raised_cosine(self.nfilts, self.nfilts, 1.0/float(self.sps), self.eb, 5*self.sps*self.nfilts))
 
     def get_nfilts(self):
         return self.nfilts
 
     def set_nfilts(self, nfilts):
         self.nfilts = nfilts
-        self.set_rrc_taps(firdes.root_raised_cosine(self.nfilts, self.nfilts, 1.0/float(self.sps), self.eb, 5*self.sps*self.nfilts))
         self.set_matched_filter(firdes.root_raised_cosine(self.nfilts, self.nfilts, 1, self.eb, int(11*self.sps*self.nfilts)))
+        self.set_rrc_taps(firdes.root_raised_cosine(self.nfilts, self.nfilts, 1.0/float(self.sps), self.eb, 5*self.sps*self.nfilts))
 
     def get_eb(self):
         return self.eb
 
     def set_eb(self, eb):
         self.eb = eb
-        self.set_rrc_taps(firdes.root_raised_cosine(self.nfilts, self.nfilts, 1.0/float(self.sps), self.eb, 5*self.sps*self.nfilts))
         self.set_matched_filter(firdes.root_raised_cosine(self.nfilts, self.nfilts, 1, self.eb, int(11*self.sps*self.nfilts)))
+        self.set_rrc_taps(firdes.root_raised_cosine(self.nfilts, self.nfilts, 1.0/float(self.sps), self.eb, 5*self.sps*self.nfilts))
 
     def get_usrp_rf_freq(self):
         return self.usrp_rf_freq
@@ -300,8 +300,8 @@ class rx_application(gr.top_block, Qt.QWidget):
     def set_samp_rate(self, samp_rate):
         self.samp_rate = samp_rate
         self.qtgui_time_sink_x_1.set_samp_rate(self.samp_rate)
-        self.uhd_usrp_source_0.set_samp_rate(self.samp_rate)
         self.qtgui_time_sink_x_1_0.set_samp_rate(self.samp_rate)
+        self.uhd_usrp_source_0.set_samp_rate(self.samp_rate)
 
     def get_rrc_taps(self):
         return self.rrc_taps
