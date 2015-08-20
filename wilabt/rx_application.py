@@ -2,7 +2,7 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Rx Application
-# Generated: Thu Aug 20 10:16:45 2015
+# Generated: Thu Aug 20 11:48:03 2015
 ##################################################
 
 if __name__ == '__main__':
@@ -233,7 +233,7 @@ class rx_application(gr.top_block, Qt.QWidget):
         self.digital_fll_band_edge_cc_0 = digital.fll_band_edge_cc(sps, eb, 45, 2*3.14/100.0)
         self.digital_costas_loop_cc_0 = digital.costas_loop_cc(1*3.14/50.0, 2, False)
         self.digital_correlate_and_sync_cc_0 = digital.correlate_and_sync_cc((preamble), (matched_filter), sps)
-        self.crew_mybpsk_decoder_cb_0 = crew.mybpsk_decoder_cb(([1,-1,1,-1,1,1,-1,-1,1,1,-1,1,1,1,-1,1,1,-1,1,-1,-1,1,-1,-1,1,1,1,-1,-1,-1,1,-1,1,1,1,1,-1,-1,1,-1,1,-1,-1,-1,1,1,-1,-1,-1,-1,1,-1,-1,-1,-1,-1,1,1,1,1,1,1,-1,-1]))
+        self.crew_packet_decoder_cb_0 = crew.packet_decoder_cb((preamble))
         self.blocks_multiply_const_vxx_0 = blocks.multiply_const_vcc((digital_gain, ))
         self.blocks_file_sink_0 = blocks.file_sink(gr.sizeof_char*1, "/home/lwei/Documents/grflowchart/file_received.txt", False)
         self.blocks_file_sink_0.set_unbuffered(False)
@@ -247,9 +247,9 @@ class rx_application(gr.top_block, Qt.QWidget):
         self.connect((self.blocks_complex_to_float_0, 1), (self.qtgui_time_sink_x_1, 2))    
         self.connect((self.blocks_complex_to_mag_0, 0), (self.qtgui_time_sink_x_1, 0))    
         self.connect((self.blocks_multiply_const_vxx_0, 0), (self.digital_fll_band_edge_cc_0, 0))    
-        self.connect((self.crew_mybpsk_decoder_cb_0, 0), (self.blocks_file_sink_0, 0))    
-        self.connect((self.crew_mybpsk_decoder_cb_0, 1), (self.qtgui_time_sink_x_1_0, 0))    
-        self.connect((self.digital_costas_loop_cc_0, 0), (self.crew_mybpsk_decoder_cb_0, 0))    
+        self.connect((self.crew_packet_decoder_cb_0, 0), (self.blocks_file_sink_0, 0))    
+        self.connect((self.crew_packet_decoder_cb_0, 1), (self.qtgui_time_sink_x_1_0, 0))    
+        self.connect((self.digital_costas_loop_cc_0, 0), (self.crew_packet_decoder_cb_0, 0))    
         self.connect((self.digital_costas_loop_cc_0, 0), (self.qtgui_const_sink_x_0_0, 0))    
         self.connect((self.digital_fll_band_edge_cc_0, 0), (self.digital_correlate_and_sync_cc_0, 0))    
         self.connect((self.digital_pfb_clock_sync_xxx_0, 0), (self.digital_costas_loop_cc_0, 0))    
@@ -299,9 +299,9 @@ class rx_application(gr.top_block, Qt.QWidget):
 
     def set_samp_rate(self, samp_rate):
         self.samp_rate = samp_rate
-        self.qtgui_time_sink_x_1_0.set_samp_rate(self.samp_rate)
         self.qtgui_time_sink_x_1.set_samp_rate(self.samp_rate)
         self.uhd_usrp_source_0.set_samp_rate(self.samp_rate)
+        self.qtgui_time_sink_x_1_0.set_samp_rate(self.samp_rate)
 
     def get_rrc_taps(self):
         return self.rrc_taps
