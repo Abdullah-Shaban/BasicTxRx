@@ -26,8 +26,7 @@ To run the transmitter:
     $ verify the connection between the server and USRP
     $ launch GRC by running the command: gnuradio-companion
     $ open the 'crew_packet_gen.grc' with GRC and compile it with the 'compile' button, after which you should see the 'crew' category shows up in your GRC library
-    $ open the 'tx_application.grc' with GRC, adapt the IP address of the USRP according to the reservation, and execute the flow chart  with the "run" button 
-    $ alternatively we can directly run the python file without using GRC to start the transmission.
+    $ open the 'tx_application.grc' with GRC, adapt the IP address of the USRP according to the reservation, double click on file source and select the 'file_sent.txt', execute the flow chart  with the "run" button 
 
 This tx_application.grc file consists of five components:
   * File Source

@@ -2,7 +2,7 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Tx Application
-# Generated: Wed Aug 19 18:32:20 2015
+# Generated: Thu Aug 20 17:18:04 2015
 ##################################################
 
 if __name__ == '__main__':
@@ -68,10 +68,10 @@ class tx_application(gr.top_block, Qt.QWidget):
         self.preamble = preamble = [1,-1,1,-1,1,1,-1,-1,1,1,-1,1,1,1,-1,1,1,-1,1,-1,-1,1,-1,-1,1,1,1,-1,-1,-1,1,-1,1,1,1,1,-1,-1,1,-1,1,-1,-1,-1,1,1,-1,-1,-1,-1,1,-1,-1,-1,-1,-1,1,1,1,1,1,1,-1,-1]
         self.payload_size = payload_size = 500
         self.gap = gap = 20000
-        self.gain = gain = 20
+        self.gain = gain = 26
         self.fine_freq = fine_freq = 0
-        self.digital_gain = digital_gain = 0.0625
-        self.addr = addr = "addr=192.168.10.4"
+        self.digital_gain = digital_gain = 1.0/8
+        self.addr = addr = "addr=192.168.10.2"
 
         ##################################################
         # Blocks
@@ -82,7 +82,7 @@ class tx_application(gr.top_block, Qt.QWidget):
         self._gap_range = Range(100, 50000, 100, 20000, 200)
         self._gap_win = RangeWidget(self._gap_range, self.set_gap, "Interpacket interval (in samples)", "counter_slider")
         self.top_grid_layout.addWidget(self._gap_win, 2,1,1,1)
-        self._gain_range = Range(0, 31.5, 0.5, 20, 200)
+        self._gain_range = Range(0, 31.5, 0.5, 26, 200)
         self._gain_win = RangeWidget(self._gain_range, self.set_gain, "Tx Gain", "counter_slider")
         self.top_grid_layout.addWidget(self._gain_win, 2,0,1,1)
         self._fine_freq_range = Range(-10e3, 10e3, 10, 0, 200)
@@ -141,11 +141,11 @@ class tx_application(gr.top_block, Qt.QWidget):
         self._qtgui_freq_sink_x_0_win = sip.wrapinstance(self.qtgui_freq_sink_x_0.pyqwidget(), Qt.QWidget)
         self.top_grid_layout.addWidget(self._qtgui_freq_sink_x_0_win, 0,0,1,2)
         self.crew_packet_gen_0 = crew_packet_gen(
-            packet_len=payload_size,
             gap=gap,
+            packet_len=payload_size,
         )
         self.blocks_multiply_const_vxx_0 = blocks.multiply_const_vcc((digital_gain, ))
-        self.blocks_file_source_0 = blocks.file_source(gr.sizeof_char*1, "/home/lwei/Documents/grflowchart/file_sent.txt", True)
+        self.blocks_file_source_0 = blocks.file_source(gr.sizeof_char*1, "/users/lwei/GITfolder/wirelessacademy/BasicTx/wilabt/file_sent.txt", True)
 
         ##################################################
         # Connections
