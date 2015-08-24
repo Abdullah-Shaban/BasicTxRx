@@ -19,35 +19,27 @@ Requirements:
 To run the receiver:
 
     $ reserve 1 USRP and 1 server (can be both server1P or server5P) on the testbed reservation page
-    $ define an emulab experiment using the rx_application.ns file (if it does not exist), adapt the USRP and server according to reservation and swap in the experiment
-    $ log onto the reserved server with your w-iLab.t account graphically (with -X option if using ssh client)
+    $ define an emulab experiment using the rx_application.ns file (if it does not exist), adapt the USRP and server according to the reservation and swap in the experiment
+    $ log into the reserved server with your w-iLab.t account graphically (with -X option if using ssh client)
     $ verify the connection between the server and USRP
-    $ launch GRC by running the command: grc
+    $ launch GRC by running the command: gnuradio-companion
     $ open the 'rx_application.grc' with GRC, adapt the IP address of the USRP 
     $ execute the flow graph with the "run" button 
-    $ alternatively we can directly run the python file without using GRC to start the receiver.
+    $ alternatively, the file sink can be enabled to take a look at the received data. 
 
-This .grc file consists of the following components:
+This .grc file mainly consists of the following components:
   * USRP source
     * Provides raw samples from the USRP
+  * FLL Band Edge
+    * Implements frequency locked loop and band edge filters to correct the frequency offset
+  * Correlate and Sync
+    * The block searches for a preamble using correlation to get time and phase estimation
   * Poly phase clock sync
     * Performs clock correction using poly phase filter
-  * LMS DD equalizer
-    * Compensates for non-flat channel response
   * Costas loop
-    * Performs fine clock adjustment and lock to a particular constellation
-  * QT GUI constellation sink
-    * Shows the constellation diagram after the costas loop   
-  * Constellation receiver
-    * Produces symbols based on the constellation  
-  * Map
-    * Maps symbols into bits         
-  * Differential decoder
-    * Decodes the symbols based on the difference between cocnsecutive symbols
-  * Unpack K bits
-    * Deserializes the bits
-  * Char to float
-    * Converts the storage format into float
-  * QT GUI time sink
-    * Plots the received bits in a scope
+    * Performs fine clock and phase adjustment and lock to a particular constellation  
+  * Packet Decoder
+    * Decode the symbols, remove preambles and headers, output payload bytes and number of packets received per second
+
+
 
