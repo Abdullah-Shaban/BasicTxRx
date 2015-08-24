@@ -23,6 +23,7 @@
 
 #include <crew/packet_decoder_cb.h>
 #include <boost/crc.hpp>
+#include <ctime>
 
 namespace gr {
   namespace crew {
@@ -35,12 +36,11 @@ namespace gr {
             size_t d_pkt_size, d_header_size, d_payload_size, d_crc_size;       // sizes of all parts of the packet
             int d_state;                                                        // current state of the FSM 
             gr_complex sign_phase ;                                             // complex variable to store the phase rotation
-            size_t wr_ptr, rd_ptr, wr_ptr_per, rd_ptr_per ;                     // read and write pointers for buffers
-            unsigned char *buffer_bit, *buffer_byte, *buffer_per ;              // addr pointers of buffers
-            unsigned int count_pkt, count_err ;                                 // counting variables for packet statistics
-            unsigned int last_seq ;                                             // The seq number of the last decoded packet, for checking packet loss
-            unsigned int continuous_failed ;                                    // counting variable to keep track of how packets failed to decode in roll 
-            bool updated ;                                                      // a flag to show updates on packet statistics
+            size_t wr_ptr, rd_ptr ;                                             // read and write pointers for buffers
+            unsigned char *buffer_bit, *buffer_byte ;                           // addr pointers of buffers
+            unsigned int count_pkt ;                                            // counting variables for packet statistics
+            
+            timeval time_ref ;                                                  // a variable to keep trap of the time
 
             char symbol2bit(gr_complex sign_phase, gr_complex in) ;             // function to turn symbol into bits
             int bit2byte(void *out_ptr, void *in_ptr, int d_pkt_size) ;         // function to turn bits into bytes

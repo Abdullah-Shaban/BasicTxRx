@@ -2,7 +2,7 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Rx Application
-# Generated: Thu Aug 20 17:18:09 2015
+# Generated: Mon Aug 24 17:06:17 2015
 ##################################################
 
 if __name__ == '__main__':
@@ -64,28 +64,28 @@ class rx_application(gr.top_block, Qt.QWidget):
         self.sps = sps = 4
         self.nfilts = nfilts = 32
         self.eb = eb = 0.35
-        self.usrp_rf_freq = usrp_rf_freq = 2495e6
+        self.usrp_rf_freq = usrp_rf_freq = 2475e6
         self.samp_rate = samp_rate = 200000
         self.rrc_taps = rrc_taps = firdes.root_raised_cosine(nfilts, nfilts, 1.0/float(sps), eb, 5*sps*nfilts)
         self.preamble = preamble = [1,-1,1,-1,1,1,-1,-1,1,1,-1,1,1,1,-1,1,1,-1,1,-1,-1,1,-1,-1,1,1,1,-1,-1,-1,1,-1,1,1,1,1,-1,-1,1,-1,1,-1,-1,-1,1,1,-1,-1,-1,-1,1,-1,-1,-1,-1,-1,1,1,1,1,1,1,-1,-1]
         self.matched_filter = matched_filter = firdes.root_raised_cosine(nfilts, nfilts, 1, eb, int(11*sps*nfilts))
-        self.gain = gain = 30
-        self.digital_gain = digital_gain = 30
+        self.gain = gain = 29
+        self.digital_gain = digital_gain = 43
         self.constel = constel = digital.constellation_calcdist(([1,- 1]), ([0,1]), 2, 1).base()
         self.addr = addr = "addr=192.168.20.2"
 
         ##################################################
         # Blocks
         ##################################################
-        self._usrp_rf_freq_range = Range(2400e6, 2500e6, 100e3, 2495e6, 200)
+        self._usrp_rf_freq_range = Range(2400e6, 2500e6, 100e3, 2475e6, 200)
         self._usrp_rf_freq_win = RangeWidget(self._usrp_rf_freq_range, self.set_usrp_rf_freq, "Rx Frequency", "counter_slider")
-        self.top_grid_layout.addWidget(self._usrp_rf_freq_win, 3,0,1,2)
-        self._gain_range = Range(0, 40, 0.5, 30, 200)
+        self.top_grid_layout.addWidget(self._usrp_rf_freq_win, 2,0,1,1)
+        self._gain_range = Range(0, 40, 0.5, 29, 200)
         self._gain_win = RangeWidget(self._gain_range, self.set_gain, "Rx Gain", "counter_slider")
-        self.top_grid_layout.addWidget(self._gain_win, 2,0,1,1)
-        self._digital_gain_range = Range(0, 60, 1, 30, 200)
+        self.top_grid_layout.addWidget(self._gain_win, 1,0,1,1)
+        self._digital_gain_range = Range(0, 60, 1, 43, 200)
         self._digital_gain_win = RangeWidget(self._digital_gain_range, self.set_digital_gain, "Digital Gain", "counter_slider")
-        self.top_grid_layout.addWidget(self._digital_gain_win, 2,1,1,1)
+        self.top_grid_layout.addWidget(self._digital_gain_win, 1,1,1,1)
         self.uhd_usrp_source_0 = uhd.usrp_source(
         	",".join((addr, "")),
         	uhd.stream_args(
@@ -97,52 +97,6 @@ class rx_application(gr.top_block, Qt.QWidget):
         self.uhd_usrp_source_0.set_center_freq(usrp_rf_freq, 0)
         self.uhd_usrp_source_0.set_gain(gain, 0)
         self.uhd_usrp_source_0.set_antenna("J1", 0)
-        self.qtgui_time_sink_x_1_0 = qtgui.time_sink_f(
-        	50, #size
-        	samp_rate, #samp_rate
-        	"Packet Error Rate", #name
-        	1 #number of inputs
-        )
-        self.qtgui_time_sink_x_1_0.set_update_time(0.10)
-        self.qtgui_time_sink_x_1_0.set_y_axis(0, 100)
-        
-        self.qtgui_time_sink_x_1_0.set_y_label("PER", "%")
-        
-        self.qtgui_time_sink_x_1_0.enable_tags(-1, False)
-        self.qtgui_time_sink_x_1_0.set_trigger_mode(qtgui.TRIG_MODE_FREE, qtgui.TRIG_SLOPE_POS, 0.5, 0, 0, "")
-        self.qtgui_time_sink_x_1_0.enable_autoscale(False)
-        self.qtgui_time_sink_x_1_0.enable_grid(True)
-        self.qtgui_time_sink_x_1_0.enable_control_panel(True)
-        
-        if not True:
-          self.qtgui_time_sink_x_1_0.disable_legend()
-        
-        labels = ["", "", "", "", "",
-                  "", "", "", "", ""]
-        widths = [1, 1, 1, 1, 1,
-                  1, 1, 1, 1, 1]
-        colors = ["blue", "red", "green", "black", "cyan",
-                  "magenta", "yellow", "dark red", "dark green", "blue"]
-        styles = [1, 1, 1, 1, 1,
-                  1, 1, 1, 1, 1]
-        markers = [0, -1, -1, -1, -1,
-                   -1, -1, -1, -1, -1]
-        alphas = [1.0, 1.0, 1.0, 1.0, 1.0,
-                  1.0, 1.0, 1.0, 1.0, 1.0]
-        
-        for i in xrange(1):
-            if len(labels[i]) == 0:
-                self.qtgui_time_sink_x_1_0.set_line_label(i, "Data {0}".format(i))
-            else:
-                self.qtgui_time_sink_x_1_0.set_line_label(i, labels[i])
-            self.qtgui_time_sink_x_1_0.set_line_width(i, widths[i])
-            self.qtgui_time_sink_x_1_0.set_line_color(i, colors[i])
-            self.qtgui_time_sink_x_1_0.set_line_style(i, styles[i])
-            self.qtgui_time_sink_x_1_0.set_line_marker(i, markers[i])
-            self.qtgui_time_sink_x_1_0.set_line_alpha(i, alphas[i])
-        
-        self._qtgui_time_sink_x_1_0_win = sip.wrapinstance(self.qtgui_time_sink_x_1_0.pyqwidget(), Qt.QWidget)
-        self.top_grid_layout.addWidget(self._qtgui_time_sink_x_1_0_win, 1,0,1,2)
         self.qtgui_time_sink_x_1 = qtgui.time_sink_f(
         	40000, #size
         	samp_rate, #samp_rate
@@ -189,6 +143,37 @@ class rx_application(gr.top_block, Qt.QWidget):
         
         self._qtgui_time_sink_x_1_win = sip.wrapinstance(self.qtgui_time_sink_x_1.pyqwidget(), Qt.QWidget)
         self.top_grid_layout.addWidget(self._qtgui_time_sink_x_1_win, 0,0,1,1)
+        self.qtgui_number_sink_0 = qtgui.number_sink(
+                gr.sizeof_float,
+                0,
+                qtgui.NUM_GRAPH_VERT,
+        	1
+        )
+        self.qtgui_number_sink_0.set_update_time(0.1)
+        self.qtgui_number_sink_0.set_title("Packet Received")
+        
+        labels = [" ", "", "", "", "",
+                  "", "", "", "", ""]
+        units = ["packet/sec", "", "", "", "",
+                  "", "", "", "", ""]
+        colors = [("black", "black"), ("black", "black"), ("black", "black"), ("black", "black"), ("black", "black"),
+                  ("black", "black"), ("black", "black"), ("black", "black"), ("black", "black"), ("black", "black")]
+        factor = [1, 1, 1, 1, 1,
+                  1, 1, 1, 1, 1]
+        for i in xrange(1):
+            self.qtgui_number_sink_0.set_min(i, 0)
+            self.qtgui_number_sink_0.set_max(i, 100)
+            self.qtgui_number_sink_0.set_color(i, colors[i][0], colors[i][1])
+            if len(labels[i]) == 0:
+                self.qtgui_number_sink_0.set_label(i, "Data {0}".format(i))
+            else:
+                self.qtgui_number_sink_0.set_label(i, labels[i])
+            self.qtgui_number_sink_0.set_unit(i, units[i])
+            self.qtgui_number_sink_0.set_factor(i, factor[i])
+        
+        self.qtgui_number_sink_0.enable_autoscale(False)
+        self._qtgui_number_sink_0_win = sip.wrapinstance(self.qtgui_number_sink_0.pyqwidget(), Qt.QWidget)
+        self.top_grid_layout.addWidget(self._qtgui_number_sink_0_win, 0,2,1,1)
         self.qtgui_const_sink_x_0_0 = qtgui.const_sink_c(
         	20000, #size
         	"", #name
@@ -234,6 +219,7 @@ class rx_application(gr.top_block, Qt.QWidget):
         self.digital_costas_loop_cc_0 = digital.costas_loop_cc(1*3.14/50.0, 2, False)
         self.digital_correlate_and_sync_cc_0 = digital.correlate_and_sync_cc((preamble), (matched_filter), sps)
         self.crew_packet_decoder_cb_0 = crew.packet_decoder_cb((preamble))
+        self.blocks_null_sink_0 = blocks.null_sink(gr.sizeof_char*1)
         self.blocks_multiply_const_vxx_0 = blocks.multiply_const_vcc((digital_gain, ))
         self.blocks_file_sink_0 = blocks.file_sink(gr.sizeof_char*1, "/users/lwei/file_received.txt", False)
         self.blocks_file_sink_0.set_unbuffered(False)
@@ -248,7 +234,8 @@ class rx_application(gr.top_block, Qt.QWidget):
         self.connect((self.blocks_complex_to_mag_0, 0), (self.qtgui_time_sink_x_1, 0))    
         self.connect((self.blocks_multiply_const_vxx_0, 0), (self.digital_fll_band_edge_cc_0, 0))    
         self.connect((self.crew_packet_decoder_cb_0, 0), (self.blocks_file_sink_0, 0))    
-        self.connect((self.crew_packet_decoder_cb_0, 1), (self.qtgui_time_sink_x_1_0, 0))    
+        self.connect((self.crew_packet_decoder_cb_0, 0), (self.blocks_null_sink_0, 0))    
+        self.connect((self.crew_packet_decoder_cb_0, 1), (self.qtgui_number_sink_0, 0))    
         self.connect((self.digital_costas_loop_cc_0, 0), (self.crew_packet_decoder_cb_0, 0))    
         self.connect((self.digital_costas_loop_cc_0, 0), (self.qtgui_const_sink_x_0_0, 0))    
         self.connect((self.digital_fll_band_edge_cc_0, 0), (self.digital_correlate_and_sync_cc_0, 0))    
@@ -300,7 +287,6 @@ class rx_application(gr.top_block, Qt.QWidget):
     def set_samp_rate(self, samp_rate):
         self.samp_rate = samp_rate
         self.qtgui_time_sink_x_1.set_samp_rate(self.samp_rate)
-        self.qtgui_time_sink_x_1_0.set_samp_rate(self.samp_rate)
         self.uhd_usrp_source_0.set_samp_rate(self.samp_rate)
 
     def get_rrc_taps(self):

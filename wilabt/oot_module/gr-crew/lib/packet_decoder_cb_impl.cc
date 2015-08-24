@@ -25,7 +25,6 @@
 #include <gnuradio/io_signature.h>
 #include "packet_decoder_cb_impl.h"
 #define MAX_PAYLOAD 500
-#define PER_WINDOW  1000
 #define PI 3.1415926
 namespace gr {
   namespace crew {
@@ -55,7 +54,7 @@ namespace gr {
               gr::io_signature::makev(1, 2, iosig))
     {
         d_symbols = symbols;
-        d_corr_thr = 28 ; // TODO make the decision of the threshold automatic 
+        d_corr_thr = 15 ; // TODO make the decision of the threshold automatic 
         
         // sizes in bits 
         d_header_size = 4*8 ;
@@ -65,18 +64,15 @@ namespace gr {
         
         // reset read and write pointers and packet counters and flag variable
         wr_ptr = 0 ; rd_ptr = 0 ;
-        wr_ptr_per = 0 ; rd_ptr_per = 0 ;
         count_pkt = 0 ; 
-        count_err = 0 ; 
-        last_seq = -1 ;
-        continuous_failed = 0 ; 
-        updated = false ; 
-
+        
         // initialize buffers 
         buffer_bit = (unsigned char*) malloc((MAX_PAYLOAD+20)*8) ; //  *8 to convert to bits 
         buffer_byte = (unsigned char*) malloc(MAX_PAYLOAD+20) ; 
-        buffer_per = (unsigned char*) malloc(PER_WINDOW*2) ; 
 
+        // store the time reference
+        gettimeofday(&time_ref, 0);
+        
         // initialize the state of FSM
         d_state = STATE_FIND_TRIGGER ; 
     }
@@ -88,7 +84,6 @@ namespace gr {
     {
         free(buffer_bit);
         free(buffer_byte);
-        free(buffer_per);
         std::cout << "INFO: Done! " <<  std::endl ; 
     }
 
@@ -185,8 +180,6 @@ namespace gr {
             err = (float*) output_items[1] ;
         int nsp_in = ninput_items[0] ; 
         int corr_index = 0 ; 
-        unsigned int lost_pkt = 0 ;
-
         // implement FSM 
         switch (d_state) {        
             case STATE_FIND_TRIGGER:
@@ -195,8 +188,6 @@ namespace gr {
                     d_state = STATE_PAYLOAD ;
                     rd_ptr = corr_index + d_symbols.size() ;
                     wr_ptr = 0 ;
-                    count_pkt ++ ;
-                    updated = true ; 
                     // fall through
                 }else if(corr_index == -2){
                     consume_each(0) ;
@@ -239,62 +230,26 @@ namespace gr {
                         d_state = STATE_PAYLOAD ; 
                         wr_ptr = 0 ; 
 
-                        // check if there are missed packets using the continuous sequence number
-                        if(last_seq == -1){
-                            last_seq = seq_number ;
-                            lost_pkt = 0 ;
-                        }else if(last_seq == 0xFFFF){
-                            lost_pkt = seq_number ; 
-                            last_seq = seq_number ;
-                        }else{
-                            lost_pkt = seq_number - last_seq - 1 ;
-                            last_seq = seq_number ;
-                        }
-
-                        if(lost_pkt > continuous_failed) {
-                            int pkt_not_detected = lost_pkt - continuous_failed ; 
-                            std::cout << pkt_not_detected<< " packets not detected " << std::endl ; 
-                            count_pkt += pkt_not_detected ; 
-                            count_err += pkt_not_detected ; 
-                            buffer_per[wr_ptr_per] = pkt_not_detected ; 
-                            wr_ptr_per++ ;
-                            if(wr_ptr_per >= PER_WINDOW*2)
-                                wr_ptr_per = 0 ;
-
-                        }else if( lost_pkt < continuous_failed) {
-                            int pkt_falsealarm = continuous_failed - lost_pkt ; 
-                            std::cout << pkt_falsealarm << " packets detected are not true " << std::endl ; 
-                            count_pkt -= pkt_falsealarm ;
-                            count_err -= pkt_falsealarm ; 
-                            if(wr_ptr_per >= pkt_falsealarm) 
-                                wr_ptr_per -= pkt_falsealarm ;
-                            else
-                                wr_ptr_per += PER_WINDOW*2 - pkt_falsealarm ;
-                        }
-
                         // check if the payload size is below the maximum
                         if(packet_len_rx-d_crc_size/8 <= MAX_PAYLOAD){
                             d_payload_size = packet_len_rx * 8 - d_crc_size ; // update the real payload size                            
-                        }else{ // if not return 
-                            d_payload_size = MAX_PAYLOAD ;
+                        }else{ 
+                            d_state = STATE_FIND_TRIGGER ; 
+                            consume_each(rd_ptr) ;
+                            rd_ptr = 0 ;
+                            wr_ptr = 0 ;
                             std::cout << "ERROR: payload size larger than " << MAX_PAYLOAD << std::endl ;
-                            return WORK_DONE ; 
+                            break ; 
+                            //return WORK_DONE ; 
                         }
                         d_pkt_size = d_symbols.size()+d_header_size+d_payload_size+d_crc_size ;  
                         // fall through
                     }else{ // header crc incorrect
-                        std::cout << "failed to decode header ! " << std::endl ;
+                        //std::cout << "failed to decode header ! " << std::endl ;
                         d_state = STATE_FIND_TRIGGER ; 
                         consume_each(rd_ptr) ;
                         rd_ptr = 0 ;
                         wr_ptr = 0 ;
-                        // increase packet error counter 
-                        count_err++ ; 
-                        continuous_failed ++ ;
-                        buffer_per[wr_ptr_per] = 1 ;
-                        wr_ptr_per++ ;
-                        if(wr_ptr_per >= PER_WINDOW*2)
-                            wr_ptr_per = 0 ;
                         break ; 
                     }        
 
@@ -329,20 +284,10 @@ namespace gr {
                         // if crc correct, copy the payload to the output
                         memcpy((void *) out, (void *) buffer_byte, d_payload_size/8);
                         produce(0,d_payload_size/8);
-                        // update the per buffer  
-                        buffer_per[wr_ptr_per] = 0 ;
-                        continuous_failed = 0 ;
+                        count_pkt ++ ; 
                     }else{
                         std::cout << "payload crc incorrect ! " << std::endl ; 
-                        // increase packet error counter and update the per buffer
-                        count_err++ ; 
-                        continuous_failed ++ ;
-                        buffer_per[wr_ptr_per] = 1 ;
                     }
-                    // update the per buffer write pointer
-                    wr_ptr_per++ ;
-                    if(wr_ptr_per >= PER_WINDOW*2)
-                        wr_ptr_per = 0 ;
 
                     // consume the samples 
                     consume_each(rd_ptr) ; 
@@ -364,24 +309,26 @@ namespace gr {
 
         }
         
-        // if required to have the per output
-        if(output_items.size() == 2 && updated ){
-            // reset the flag 
-            updated = false ; 
-            // calculate the per
-            float pkt_err_rate = (float) count_err / count_pkt * 100.0 ;
-            // copy the per to the output
-            memcpy((void *) err, (void *) &pkt_err_rate, sizeof(float));
-            produce(1,1) ;
-            // if the packet counter is above the per window
-            if( count_pkt > PER_WINDOW ) {
-                // move the sliding window on the per buffer
-                count_pkt = PER_WINDOW ;
-                count_err -= (unsigned int) buffer_per[rd_ptr_per] ; 
-                rd_ptr_per ++ ;
-                if(rd_ptr_per >= PER_WINDOW*2)
-                    rd_ptr_per = 0 ;  
-            }         
+        // if required to have the packet reception rate output
+        
+        if(output_items.size() == 2 ){
+            long mtime, seconds, useconds; 
+            timeval now ;  
+            gettimeofday(&now, 0);
+            seconds  = now.tv_sec  - time_ref.tv_sec;
+            useconds = now.tv_usec - time_ref.tv_usec;
+            mtime = ((seconds) * 1000 + useconds/1000.0) + 0.5;
+
+            float pkt_received = count_pkt ; //needed for type cast ? 
+            if(mtime >= 1000){
+                // copy the count_pkt to the output
+                memcpy((void *) err, (void *) &pkt_received, sizeof(float));
+                produce(1,1) ;
+                // reset the time reference 
+                gettimeofday(&time_ref, 0);  
+                // reset the packet counter 
+                count_pkt = 0 ; 
+            }
         }
         
         return WORK_CALLED_PRODUCE;

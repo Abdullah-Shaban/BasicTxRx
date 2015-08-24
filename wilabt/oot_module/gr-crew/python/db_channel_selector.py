@@ -24,7 +24,7 @@ import numpy
 from gnuradio import gr
 import string
 import psycopg2 
-
+from datetime import datetime
 class db_channel_selector(gr.sync_block):
     """
     docstring for block db_channel_selector
@@ -45,6 +45,7 @@ class db_channel_selector(gr.sync_block):
         self.freq = 2405000000 # default frequency 
         self.ber_thr = berthr
         self.ber = 0 # default bit error rate is 0        
+        self.time_ref = datetime.now()
 
     def work(self, input_items, output_items):
         in0 = input_items[0]
@@ -63,7 +64,7 @@ class db_channel_selector(gr.sync_block):
                 
             onerow = self.cur.fetchone()    
             rssi_list = onerow[7:]
-            print rssi_list 
+            # print rssi_list 
             index=numpy.argmin(rssi_list)
             
             # translate channel index into frequency
@@ -78,9 +79,13 @@ class db_channel_selector(gr.sync_block):
                 freq = 2400000000.0
                 
             # assign the new freq value to the class variable if it is different
-            if(self.freq != freq):
+            t2 = datetime.now()
+            delta = t2-self.time_ref 
+            delta.total_seconds()
+            if(self.freq != freq and delta.total_seconds() > 6):
                 self.freq = freq 
                 print "INFO: update frequency to ", freq
+                self.time_ref = datetime.now()
             
         return self.freq        
 

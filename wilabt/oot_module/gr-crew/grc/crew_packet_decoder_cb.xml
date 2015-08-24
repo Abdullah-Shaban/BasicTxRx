@@ -36,7 +36,8 @@
     <type>byte</type>
   </source>
   <source>
-    <name>err</name>
+    <name>pktcount</name>
     <type>float</type>
+    <optional>1</optional>
   </source>
 </block>
