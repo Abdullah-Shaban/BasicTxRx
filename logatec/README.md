@@ -28,6 +28,8 @@ To run the experiment:
 
 The script saves the recorded spectrogram data into `logatec.csv` file in the
 current directory. This is a text-based file that is simple to import into
-Matlab or other software.
+Matlab or other software. To visualize using GNU Plot, run:
 
-See comments in the script for more details.
+    $ gnuplot -p basicrx.gnuplot
+
+See comments in the `logatec.py` script for more details.
