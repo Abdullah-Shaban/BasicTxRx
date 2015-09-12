@@ -2,7 +2,7 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Tx Application
-# Generated: Thu Aug 20 17:18:04 2015
+# Generated: Fri Sep 11 17:56:32 2015
 ##################################################
 
 if __name__ == '__main__':
@@ -63,31 +63,28 @@ class tx_application(gr.top_block, Qt.QWidget):
         ##################################################
         # Variables
         ##################################################
-        self.usrp_rf_freq = usrp_rf_freq = 2495000000
+        self.tx_pkt_rate = tx_pkt_rate = 50
         self.samp_rate = samp_rate = 200000
-        self.preamble = preamble = [1,-1,1,-1,1,1,-1,-1,1,1,-1,1,1,1,-1,1,1,-1,1,-1,-1,1,-1,-1,1,1,1,-1,-1,-1,1,-1,1,1,1,1,-1,-1,1,-1,1,-1,-1,-1,1,1,-1,-1,-1,-1,1,-1,-1,-1,-1,-1,1,1,1,1,1,1,-1,-1]
-        self.payload_size = payload_size = 500
-        self.gap = gap = 20000
+        self.payload_size = payload_size = 50
+        self.usrp_rf_freq = usrp_rf_freq = 2475e6
+        self.gap = gap = samp_rate/tx_pkt_rate-4*(64+32+payload_size*8+32+24)
         self.gain = gain = 26
         self.fine_freq = fine_freq = 0
         self.digital_gain = digital_gain = 1.0/8
-        self.addr = addr = "addr=192.168.10.2"
+        self.addr = addr = "addr=192.168.40.2"
 
         ##################################################
         # Blocks
         ##################################################
-        self._payload_size_range = Range(50, 500, 10, 500, 200)
-        self._payload_size_win = RangeWidget(self._payload_size_range, self.set_payload_size, "payload size in byte", "counter_slider")
-        self.top_grid_layout.addWidget(self._payload_size_win, 3,0,1,1)
-        self._gap_range = Range(100, 50000, 100, 20000, 200)
-        self._gap_win = RangeWidget(self._gap_range, self.set_gap, "Interpacket interval (in samples)", "counter_slider")
-        self.top_grid_layout.addWidget(self._gap_win, 2,1,1,1)
+        self._usrp_rf_freq_range = Range(2400e6, 2500e6, 100e3, 2475e6, 200)
+        self._usrp_rf_freq_win = RangeWidget(self._usrp_rf_freq_range, self.set_usrp_rf_freq, "Rx Frequency", "counter_slider")
+        self.top_layout.addWidget(self._usrp_rf_freq_win)
         self._gain_range = Range(0, 31.5, 0.5, 26, 200)
         self._gain_win = RangeWidget(self._gain_range, self.set_gain, "Tx Gain", "counter_slider")
-        self.top_grid_layout.addWidget(self._gain_win, 2,0,1,1)
+        self.top_layout.addWidget(self._gain_win)
         self._fine_freq_range = Range(-10e3, 10e3, 10, 0, 200)
         self._fine_freq_win = RangeWidget(self._fine_freq_range, self.set_fine_freq, "Fine Frequency", "counter_slider")
-        self.top_grid_layout.addWidget(self._fine_freq_win, 3,1,1,1)
+        self.top_layout.addWidget(self._fine_freq_win)
         self.uhd_usrp_sink_0_0 = uhd.usrp_sink(
         	",".join((addr, "")),
         	uhd.stream_args(
@@ -139,7 +136,7 @@ class tx_application(gr.top_block, Qt.QWidget):
             self.qtgui_freq_sink_x_0.set_line_alpha(i, alphas[i])
         
         self._qtgui_freq_sink_x_0_win = sip.wrapinstance(self.qtgui_freq_sink_x_0.pyqwidget(), Qt.QWidget)
-        self.top_grid_layout.addWidget(self._qtgui_freq_sink_x_0_win, 0,0,1,2)
+        self.top_layout.addWidget(self._qtgui_freq_sink_x_0_win)
         self.crew_packet_gen_0 = crew_packet_gen(
             gap=gap,
             packet_len=payload_size,
@@ -160,6 +157,30 @@ class tx_application(gr.top_block, Qt.QWidget):
         self.settings.setValue("geometry", self.saveGeometry())
         event.accept()
 
+    def get_tx_pkt_rate(self):
+        return self.tx_pkt_rate
+
+    def set_tx_pkt_rate(self, tx_pkt_rate):
+        self.tx_pkt_rate = tx_pkt_rate
+        self.set_gap(self.samp_rate/self.tx_pkt_rate-4*(64+32+self.payload_size*8+32+24))
+
+    def get_samp_rate(self):
+        return self.samp_rate
+
+    def set_samp_rate(self, samp_rate):
+        self.samp_rate = samp_rate
+        self.set_gap(self.samp_rate/self.tx_pkt_rate-4*(64+32+self.payload_size*8+32+24))
+        self.uhd_usrp_sink_0_0.set_samp_rate(self.samp_rate)
+        self.qtgui_freq_sink_x_0.set_frequency_range(self.usrp_rf_freq+self.fine_freq, self.samp_rate)
+
+    def get_payload_size(self):
+        return self.payload_size
+
+    def set_payload_size(self, payload_size):
+        self.payload_size = payload_size
+        self.set_gap(self.samp_rate/self.tx_pkt_rate-4*(64+32+self.payload_size*8+32+24))
+        self.crew_packet_gen_0.set_packet_len(self.payload_size)
+
     def get_usrp_rf_freq(self):
         return self.usrp_rf_freq
 
@@ -167,27 +188,6 @@ class tx_application(gr.top_block, Qt.QWidget):
         self.usrp_rf_freq = usrp_rf_freq
         self.uhd_usrp_sink_0_0.set_center_freq(self.usrp_rf_freq+self.fine_freq, 0)
         self.qtgui_freq_sink_x_0.set_frequency_range(self.usrp_rf_freq+self.fine_freq, self.samp_rate)
-
-    def get_samp_rate(self):
-        return self.samp_rate
-
-    def set_samp_rate(self, samp_rate):
-        self.samp_rate = samp_rate
-        self.uhd_usrp_sink_0_0.set_samp_rate(self.samp_rate)
-        self.qtgui_freq_sink_x_0.set_frequency_range(self.usrp_rf_freq+self.fine_freq, self.samp_rate)
-
-    def get_preamble(self):
-        return self.preamble
-
-    def set_preamble(self, preamble):
-        self.preamble = preamble
-
-    def get_payload_size(self):
-        return self.payload_size
-
-    def set_payload_size(self, payload_size):
-        self.payload_size = payload_size
-        self.crew_packet_gen_0.set_packet_len(self.payload_size)
 
     def get_gap(self):
         return self.gap
