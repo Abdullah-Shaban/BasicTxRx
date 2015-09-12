@@ -22,5 +22,6 @@
 ########################################################################
 install(FILES
     api.h
-    packet_decoder_cb.h DESTINATION include/crew
+    packet_decoder_cb.h
+    gap_gen_cc.h DESTINATION include/crew
 )

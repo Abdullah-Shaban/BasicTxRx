@@ -27,6 +27,7 @@ link_directories(${Boost_LIBRARY_DIRS})
 
 list(APPEND crew_sources
     packet_decoder_cb_impl.cc
+    gap_gen_cc_impl.cc
 )
 
 set(crew_sources "${crew_sources}" PARENT_SCOPE)

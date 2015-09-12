@@ -5,6 +5,8 @@ source tb_compat.tcl
 #define server
 set serv1 [$ns node]
 tb-fix-node $serv1 server1 
+tb-set-node-os $serv4 ubu12gnuradio3.7.7
+
 
 #define usrp
 set u1 [$ns node]

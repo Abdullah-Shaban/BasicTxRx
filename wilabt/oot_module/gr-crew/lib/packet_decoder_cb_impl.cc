@@ -285,6 +285,7 @@ namespace gr {
                         memcpy((void *) out, (void *) buffer_byte, d_payload_size/8);
                         produce(0,d_payload_size/8);
                         count_pkt ++ ; 
+			//std::cout << "packet received ! " << std::endl ; 
                     }else{
                         std::cout << "payload crc incorrect ! " << std::endl ; 
                     }

@@ -16,8 +16,8 @@
 # along with GNU Radio; see the file COPYING.  If not, write to
 # the Free Software Foundation, Inc., 51 Franklin Street,
 # Boston, MA 02110-1301, USA.
-
 install(FILES
     crew_packet_decoder_cb.xml
-    crew_db_channel_selector.xml DESTINATION share/gnuradio/grc/blocks
+    crew_db_channel_selector.xml
+    crew_gap_gen_cc.xml DESTINATION share/gnuradio/grc/blocks
 )

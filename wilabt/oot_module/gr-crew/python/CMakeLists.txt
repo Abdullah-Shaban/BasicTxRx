@@ -31,7 +31,8 @@ endif()
 GR_PYTHON_INSTALL(
     FILES
     __init__.py
-    db_channel_selector.py DESTINATION ${GR_PYTHON_DIR}/crew
+    db_channel_selector.py
+    DESTINATION ${GR_PYTHON_DIR}/crew
 )
 
 ########################################################################
@@ -43,3 +44,4 @@ set(GR_TEST_TARGET_DEPS gnuradio-crew)
 set(GR_TEST_PYTHON_DIRS ${CMAKE_BINARY_DIR}/swig)
 GR_ADD_TEST(qa_packet_decoder_cb ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_packet_decoder_cb.py)
 GR_ADD_TEST(qa_db_channel_selector ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_db_channel_selector.py)
+GR_ADD_TEST(qa_gap_gen_cc ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_gap_gen_cc.py)
