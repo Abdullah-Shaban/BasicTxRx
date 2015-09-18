@@ -49,6 +49,7 @@ namespace gr {
        */
       static sptr make(bool running);
       virtual void set_status(bool status) = 0;
+      virtual bool get_status() = 0;
     };
 
   } // namespace crew
