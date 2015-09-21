@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<block>
+  <name>packet_decoder_cb</name>
+  <key>crew_packet_decoder_cb</key>
+  <category>crew</category>
+  <import>import crew</import>
+  <make>crew.packet_decoder_cb($symbols)</make>
+  <!-- Make one 'param' node for every Parameter you want settable from the GUI.
+       Sub-nodes:
+       * name
+       * key (makes the value accessible as $keyname, e.g. in the make node)
+       * type -->
+  <param>
+    <name>symbols</name>
+    <key>symbols</key>
+    <type>complex_vector</type>
+  </param>
+
+  <!-- Make one 'sink' node per input. Sub-nodes:
+       * name (an identifier for the GUI)
+       * type
+       * vlen
+       * optional (set to 1 for optional inputs) -->
+  <sink>
+    <name>in</name>
+    <type>complex</type>
+  </sink>
+
+  <!-- Make one 'source' node per output. Sub-nodes:
+       * name (an identifier for the GUI)
+       * type
+       * vlen
+       * optional (set to 1 for optional inputs) -->
+  <source>
+    <name>out</name>
+    <type>byte</type>
+  </source>
+  <source>
+    <name>pktcount</name>
+    <type>float</type>
+    <optional>1</optional>
+  </source>
+</block>

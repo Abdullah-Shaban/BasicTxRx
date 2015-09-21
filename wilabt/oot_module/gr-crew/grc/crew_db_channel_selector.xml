@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<block>
+  <name>db_channel_selector</name>
+  <key>crew_db_channel_selector</key>
+  <category>crew</category>
+  <import>import crew</import>
+  <make>crew.db_channel_selector($dbname, $standard, $detmode, $berthr)</make>
+  <param>
+    <name>wilab.t postgres database</name>
+    <key>dbname</key>
+    <type>raw</type>
+  </param>
+  <param>
+    <name>Wireless standard(eg: wlan_g,zigbee,bluetooth)</name>
+    <key>standard</key>
+    <type>raw</type>
+  </param>
+  <param>
+    <name>Detection mode(eg: max,min,avg)</name>
+    <key>detmode</key>
+    <type>raw</type>
+  </param>
+  <param>
+    <name>Bit error rate threshold</name>
+    <key>berthr</key>
+    <type>float</type>
+  </param>
+
+  <!-- Make one 'sink' node per input. Sub-nodes:
+       * name (an identifier for the GUI)
+       * type
+       * vlen
+       * optional (set to 1 for optional inputs) -->
+  <sink>
+    <name>in</name>
+    <type>float</type>
+  </sink>
+</block>
