@@ -1,6 +1,15 @@
-TUD: Simple receive source code
-===========================
+TUD
+===
+
+Simple receive source code
+--------------------------
+
 This code gives a preview on how a simple receive (Rx) experiment can be run at the TUD Testbed.
+
+Simple transmit source code
+---------------------------
+
+This code gives a preview on how a simple transmit (Tx) experiment can be run at the TUD Testbed.
 
 Requirements
 ============

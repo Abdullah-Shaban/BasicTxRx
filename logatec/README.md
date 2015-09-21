@@ -1,13 +1,13 @@
-Simple receive example
-======================
-
-
 LOG-a-TEC
----------
+=========
 
-The `logatec.py` script performs a simple spectrum sensing experiment in
+The `basicrx.py` script performs a simple spectrum sensing experiment in
 the 2.4 GHz band on a sensor node in the City Center cluster of the LOG-a-TEC
 testbed.
+
+The `basictx.py` script instructs a single sensor node in the City Center
+cluster of the LOG-a-TEC testbed to transmit a 200 kHz wide signal at 2.425 GHz
+center frequency and 0 dBm transmission power for 10 seconds.
 
 Experiments running on LOG-a-TEC testbed are controlled over the Internet from
 a Python script running on the user's computer. To run an experiment, you need
@@ -32,4 +32,4 @@ Matlab or other software. To visualize using GNU Plot, run:
 
     $ gnuplot -p basicrx.gnuplot
 
-See comments in the `logatec.py` script for more details.
+See comments in the `basicrx.py` and `basictx.py` scripts for more details.
