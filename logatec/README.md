@@ -22,13 +22,17 @@ To install required Python packages, run:
 
     $ pip install --user -r requirements.txt
 
-To run the experiment:
+To run the basic transmit experiment:
 
-    $ python logatec.py
+    $ python basictx.py
 
-The script saves the recorded spectrogram data into `logatec.csv` file in the
-current directory. This is a text-based file that is simple to import into
-Matlab or other software. To visualize using GNU Plot, run:
+To run the basic receive experiment:
+
+    $ python basicrx.py
+
+The `basicrx.py` script saves the recorded spectrogram data into `basicrx.csv`
+file in the current directory. This is a text-based file that is simple to
+import into Matlab or other software. To visualize using GNU Plot, run:
 
     $ gnuplot -p basicrx.gnuplot
 

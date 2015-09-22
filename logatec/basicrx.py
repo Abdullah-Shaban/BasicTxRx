@@ -110,7 +110,7 @@ def main():
 	# Alternatively, we could do something else with the results directly
 	# from this program. The SpectrumSensorResult object provides some
 	# convenient methods for accessing the result of the scan.
-	result.write("logatec.csv")
+	result.write("basicrx.csv")
 
 	# The CSV file can be easily imported and plotted into tools like
 	# MatLab. For example, to plot the recorded spectrogram using GNU Plot,
@@ -121,6 +121,6 @@ def main():
 	# gnuplot> set ylabel "time [s]"
 	# gnuplot> set cblabel "power [dBm]"
 	# gnuplot> unset key
-	# gnuplot> splot "logatec.csv" using ($2/1e6):1:3
+	# gnuplot> splot "basicrx.csv" using ($2/1e6):1:3
 
 main()
