@@ -1,11 +1,11 @@
+Simple transmit example
+=======================
+
+
 LOG-a-TEC
-=========
+---------
 
-The `basicrx.py` script performs a simple spectrum sensing experiment in
-the 2.4 GHz band on a sensor node in the City Center cluster of the LOG-a-TEC
-testbed.
-
-The `basictx.py` script instructs a single sensor node in the City Center
+The `logatec.py` script instructs a single sensor node in the City Center
 cluster of the LOG-a-TEC testbed to transmit a 200 kHz wide signal at 2.425 GHz
 center frequency and 0 dBm transmission power for 10 seconds.
 
@@ -22,18 +22,8 @@ To install required Python packages, run:
 
     $ pip install --user -r requirements.txt
 
-To run the basic transmit experiment:
+To run the experiment:
 
-    $ python basictx.py
+    $ python logatec.py
 
-To run the basic receive experiment:
-
-    $ python basicrx.py
-
-The `basicrx.py` script saves the recorded spectrogram data into `basicrx.csv`
-file in the current directory. This is a text-based file that is simple to
-import into Matlab or other software. To visualize using GNU Plot, run:
-
-    $ gnuplot -p basicrx.gnuplot
-
-See comments in the `basicrx.py` and `basictx.py` scripts for more details.
+See comments in the script for more details.
