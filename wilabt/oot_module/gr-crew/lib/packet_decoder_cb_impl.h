@@ -39,11 +39,12 @@ namespace gr {
             size_t wr_ptr, rd_ptr ;                                             // read and write pointers for buffers
             unsigned char *buffer_bit, *buffer_byte ;                           // addr pointers of buffers
             unsigned int count_pkt ;                                            // counting variables for packet statistics
+            size_t d_bps ;                                                      // bits per symbol (if 1 bpsk, if 2 qpsk) 
             
             timeval time_ref ;                                                  // a variable to keep trap of the time
 
-            char symbol2bit(gr_complex sign_phase, gr_complex in) ;             // function to turn symbol into bits
-            int bit2byte(void *out_ptr, void *in_ptr, int d_pkt_size) ;         // function to turn bits into bytes
+            char symbol2bit(gr_complex sign_phase, gr_complex in, int bps, bool header) ;             // function to turn symbol into bits
+            int bit2byte(void *out_ptr, void *in_ptr, int d_pkt_size, int bps) ;         // function to turn bits into bytes
             int find_trigger_signal(                                            // function to find the start of the preamble and calculate phase difference
                 gr_vector_const_void_star &input_items, 
                 int pkt_size, 

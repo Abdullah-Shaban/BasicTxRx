@@ -54,13 +54,16 @@ namespace gr {
               gr::io_signature::makev(1, 2, iosig))
     {
         d_symbols = symbols;
-        d_corr_thr = 15 ; // TODO make the decision of the threshold automatic 
+        d_corr_thr = 60 ; // TODO make the decision of the threshold automatic 
+
+        d_bps = 2 ; // choose for qpsk 
         
         // sizes in bits 
         d_header_size = 4*8 ;
         d_payload_size = 50*8 ; // initial packet size (needed by the forecast function)
         d_crc_size = 4*8 ;
-        d_pkt_size = d_symbols.size()+d_header_size+d_payload_size+d_crc_size ; 
+        d_pkt_size = d_symbols.size()*d_bps+d_header_size+d_payload_size+d_crc_size ;     
+
         
         // reset read and write pointers and packet counters and flag variable
         wr_ptr = 0 ; rd_ptr = 0 ;
@@ -91,11 +94,11 @@ namespace gr {
     packet_decoder_cb_impl::forecast (int noutput_items, gr_vector_int &ninput_items_required)
     {
         
-        ninput_items_required[0] = d_pkt_size + d_symbols.size() ;
+        ninput_items_required[0] = d_pkt_size/d_bps + d_symbols.size() ;
     }
 
     /*
-     * Fundtion to find the start of the preamble
+     * Function to find the start of the preamble
      */    
     int
     packet_decoder_cb_impl::find_trigger_signal(
@@ -125,16 +128,30 @@ namespace gr {
             if(std::abs(corr_max) < d_corr_thr) // compare the result against threshold
                 corr_index = -1 ; 
             else{ // if above threshold, calculate the phase rotation
-                if(std::arg(corr_max) <= PI/4 && std::arg(corr_max) > -PI/4)
-                    sign_phase = gr_complex(-1,0) ;
-                else if(std::arg(corr_max) <= 3.0*PI/4 && std::arg(corr_max) > PI/4)
-                    sign_phase = std::polar (1.0, PI/2) ; 
-                else if(std::arg(corr_max) <= -3.0*PI/4 || std::arg(corr_max) > 3.0*PI/4)
-                    sign_phase = gr_complex(1,0) ; 
-                else if(std::arg(corr_max) <= -PI/4 && std::arg(corr_max) > -3.0*PI/4)
-                    sign_phase = std::polar(1.0, -PI/2) ;
-                else{
-                    sign_phase = gr_complex(-1,0) ;
+                if(d_bps == 1 ) {
+                    if(std::arg(corr_max) <= PI/4 && std::arg(corr_max) > -PI/4)
+                        sign_phase = gr_complex(-1,0) ;
+                    else if(std::arg(corr_max) <= 3.0*PI/4 && std::arg(corr_max) > PI/4)
+                        sign_phase = std::polar (1.0, PI/2) ; 
+                    else if(std::arg(corr_max) <= -3.0*PI/4 || std::arg(corr_max) > 3.0*PI/4)
+                        sign_phase = gr_complex(1,0) ; 
+                    else if(std::arg(corr_max) <= -PI/4 && std::arg(corr_max) > -3.0*PI/4)
+                        sign_phase = std::polar(1.0, -PI/2) ;
+                    else{
+                        sign_phase = gr_complex(-1,0) ;
+                    }
+                }else{
+                    if(std::arg(corr_max) <= PI/4 && std::arg(corr_max) > -PI/4)
+                        sign_phase = gr_complex(0,1) ; // 90 degree
+                    else if(std::arg(corr_max) <= 3.0*PI/4 && std::arg(corr_max) > PI/4)
+                        sign_phase = gr_complex(1.0, 0) ; // 0 
+                    else if(std::arg(corr_max) <= -3.0*PI/4 || std::arg(corr_max) > 3.0*PI/4)
+                        sign_phase = gr_complex(0,-1) ; //  
+                    else if(std::arg(corr_max) <= -PI/4 && std::arg(corr_max) > -3.0*PI/4)
+                        sign_phase = gr_complex(-1, 0) ; // 
+                    else{
+                        sign_phase = gr_complex(1,0) ;
+                    }
                 }
             }         
             return corr_index ;
@@ -142,25 +159,53 @@ namespace gr {
     }
 
     char
-    packet_decoder_cb_impl::symbol2bit(gr_complex sign_phase, gr_complex in)
+    packet_decoder_cb_impl::symbol2bit(gr_complex sign_phase, gr_complex in, int bps, bool header)
     {
-        if((sign_phase*in).real() > 0){
-            return 1 ;
+        // bpsk         
+        if(bps == 1){        
+            if((sign_phase*in).real() > 0){
+                return 1 ;
+            }else{
+                return 0 ;
+            }
+        // qpsk 
+        // note that the header and payload has different endien ... therefore need the boolean variable 
         }else{
-            return 0 ;
+            gr_complex sample = sign_phase * in ; 
+            if (sample.imag() >= 0 and sample.real() >= 0) {
+              return 0x00;
+            }
+            else if (sample.imag() >= 0 and sample.real() < 0) {
+              if (header) 
+                return 0x02 ;
+              else
+                return 0x01;
+            }
+            else if (sample.imag() < 0 and sample.real() < 0) {
+              if(header)
+                return 0x01 ; 
+              else
+                return 0x02;
+
+            }
+            else if (sample.imag() < 0 and sample.real() >= 0) {
+              return 0x03;
+            }
         }
+        
     }
 
     int
-    packet_decoder_cb_impl::bit2byte(void *out_ptr, void *in_ptr, int d_pkt_size)
+    packet_decoder_cb_impl::bit2byte(void *out_ptr, void *in_ptr, int total_bit,int bps)
     {
         const char *in = (char*) in_ptr ;
         char *out = (char*) out_ptr ;
-        int num_byte = d_pkt_size / 8 ; 
+        int num_byte = total_bit / 8 ; 
         for (int i=0 ; i<num_byte; i++){
+
             char temp = 0 ;
-            for(int j=i*8; j< i*8+8; j++){
-                temp = temp | in[j] << (7-(j%8)) ;
+            for(int j=i*8; j< i*8+8; j+=bps){
+                temp = temp | in[j/bps] << (8-bps-(j%8)) ;
             }
             out[i] = temp ; 
         }
@@ -183,7 +228,7 @@ namespace gr {
         // implement FSM 
         switch (d_state) {        
             case STATE_FIND_TRIGGER:
-                corr_index = find_trigger_signal( input_items, d_pkt_size, nsp_in, d_corr_thr, sign_phase) ;
+                corr_index = find_trigger_signal( input_items, d_pkt_size/d_bps, nsp_in, d_corr_thr, sign_phase) ; // d_pkt_size should be the packet size in symbol 
                 if(corr_index >= 0) {
                     d_state = STATE_PAYLOAD ;
                     rd_ptr = corr_index + d_symbols.size() ;
@@ -193,31 +238,31 @@ namespace gr {
                     consume_each(0) ;
                     break ;
                 }else{
-                    consume_each(d_pkt_size) ;
+                    consume_each(d_pkt_size/d_bps) ;
                     break ;
                 }
 
                 
             case STATE_HEADER:
-                while( wr_ptr < d_header_size && rd_ptr < nsp_in) {
-                    buffer_bit[wr_ptr] = symbol2bit(sign_phase,in[rd_ptr]) ; 
+                while( wr_ptr < d_header_size/d_bps && rd_ptr < nsp_in) {
+                    buffer_bit[wr_ptr] = symbol2bit(sign_phase,in[rd_ptr],d_bps, true) ; 
                     wr_ptr ++ ; 
                     rd_ptr ++ ;        
                 }
-                if(wr_ptr >= d_header_size) { // complete header received
+                if(wr_ptr >= d_header_size/d_bps) { // complete header received
                     unsigned int packet_len_rx = 0 ; 
                     unsigned int seq_number = 0 ; 
                     unsigned char crc_rx = 0 ; 
                     // decode packet length and sequence number
-                    for(int i = 0 ; i<12 ; i++){
-                        packet_len_rx = packet_len_rx | (buffer_bit[i] << i) ; 
-                        seq_number = seq_number | (buffer_bit[i+12] << i) ;
+                    for(int i = 0 ; i<12 ; i+=d_bps){
+                        packet_len_rx = packet_len_rx | (buffer_bit[i/d_bps] << i ) ; 
+                        seq_number = seq_number | (buffer_bit[(i+12)/d_bps] << i ) ;
                     }
                     packet_len_rx &= 0x0FFF ; 
-                    seq_number &= 0x0FFF ;  
+                    seq_number &= 0x0FFF ; 
                     // decode header crc
-                    for(int i = 0 ; i<8 ; i++){
-                        crc_rx = crc_rx | (buffer_bit[i+24] << i) ; 
+                    for(int i = 0 ; i<8 ; i+=d_bps){
+                        crc_rx = crc_rx | (buffer_bit[(i+24)/d_bps] << i) ; 
                     }
                     // calculate header crc 
                     d_crc_impl.reset();
@@ -229,10 +274,10 @@ namespace gr {
                         // update state and pointer
                         d_state = STATE_PAYLOAD ; 
                         wr_ptr = 0 ; 
-
                         // check if the payload size is below the maximum
                         if(packet_len_rx-d_crc_size/8 <= MAX_PAYLOAD){
-                            d_payload_size = packet_len_rx * 8 - d_crc_size ; // update the real payload size                            
+                            d_payload_size = packet_len_rx * 8 - d_crc_size ; // update the real payload size 
+                            //d_payload_size = packet_len_rx * 8  ;
                         }else{ 
                             d_state = STATE_FIND_TRIGGER ; 
                             consume_each(rd_ptr) ;
@@ -242,10 +287,9 @@ namespace gr {
                             break ; 
                             //return WORK_DONE ; 
                         }
-                        d_pkt_size = d_symbols.size()+d_header_size+d_payload_size+d_crc_size ;  
+                        d_pkt_size = d_symbols.size()*d_bps+d_header_size+d_payload_size+d_crc_size ;  
                         // fall through
                     }else{ // header crc incorrect
-                        //std::cout << "failed to decode header ! " << std::endl ;
                         d_state = STATE_FIND_TRIGGER ; 
                         consume_each(rd_ptr) ;
                         rd_ptr = 0 ;
@@ -261,31 +305,26 @@ namespace gr {
 
 
            	case STATE_PAYLOAD:
-                while( wr_ptr + d_header_size < d_pkt_size && rd_ptr < nsp_in) {
-                    buffer_bit[wr_ptr] = symbol2bit(sign_phase,in[rd_ptr]) ; 
+                while( d_symbols.size() + wr_ptr + d_header_size/d_bps < d_pkt_size/d_bps && rd_ptr < nsp_in) {
+                    buffer_bit[wr_ptr] = symbol2bit(sign_phase,in[rd_ptr],d_bps, false) ; 
                     wr_ptr ++ ;
-                    rd_ptr ++ ;        
+                    rd_ptr ++ ;     
                 }
-      
-                if(wr_ptr + d_header_size >= d_pkt_size){ // one packet is complete
-                    bit2byte(buffer_byte, buffer_bit, d_pkt_size-d_header_size);
-
+                if(d_symbols.size() + wr_ptr + d_header_size/d_bps >= d_pkt_size/d_bps ){ // one packet is complete
+                    bit2byte(buffer_byte, buffer_bit, d_payload_size + d_crc_size ,d_bps);
                     // calculate payload crc
                     d_crc_impl_pl.reset();
                     d_crc_impl_pl.process_bytes(buffer_byte, d_payload_size/8);
                     unsigned int crc_cal = d_crc_impl_pl();
-
                     // decode payload crc 
                     unsigned int crc_rx ; 
                     memcpy((void*) &crc_rx, (void *) (buffer_byte+d_payload_size/8), 4) ;
-
                     // check payload crc                    
                     if(crc_cal == crc_rx) { 
                         // if crc correct, copy the payload to the output
                         memcpy((void *) out, (void *) buffer_byte, d_payload_size/8);
                         produce(0,d_payload_size/8);
                         count_pkt ++ ; 
-			//std::cout << "packet received ! " << std::endl ; 
                     }else{
                         std::cout << "payload crc incorrect ! " << std::endl ; 
                     }

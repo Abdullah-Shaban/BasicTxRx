@@ -2,7 +2,7 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Rx Application
-# Generated: Fri Sep 18 13:15:05 2015
+# Generated: Mon Oct  5 14:55:59 2015
 ##################################################
 
 if __name__ == '__main__':
@@ -62,30 +62,30 @@ class rx_application(gr.top_block, Qt.QWidget):
         # Variables
         ##################################################
         self.sps = sps = 4
+        self.preamble = preamble = [1,-1,1,-1,1,1,-1,-1,1,1,-1,1,1,1,-1,1,1,-1,1,-1,-1,1,-1,-1,1,1,1,-1,-1,-1,1,-1,1,1,1,1,-1,-1,1,-1,1,-1,-1,-1,1,1,-1,-1,-1,-1,1,-1,-1,-1,-1,-1,1,1,1,1,1,1,-1,-1]
         self.nfilts = nfilts = 32
         self.eb = eb = 0.35
         self.usrp_rf_freq = usrp_rf_freq = 2475e6
         self.samp_rate = samp_rate = 200000
         self.rrc_taps = rrc_taps = firdes.root_raised_cosine(nfilts, nfilts, 1.0/float(sps), eb, 5*sps*nfilts)
-        self.preamble = preamble = [1,-1,1,-1,1,1,-1,-1,1,1,-1,1,1,1,-1,1,1,-1,1,-1,-1,1,-1,-1,1,1,1,-1,-1,-1,1,-1,1,1,1,1,-1,-1,1,-1,1,-1,-1,-1,1,1,-1,-1,-1,-1,1,-1,-1,-1,-1,-1,1,1,1,1,1,1,-1,-1]
+        self.preamble_qpsk = preamble_qpsk = map(lambda x: x*(1+1j)/pow(2,0.5), preamble)
         self.matched_filter = matched_filter = firdes.root_raised_cosine(nfilts, nfilts, 1, eb, int(11*sps*nfilts))
         self.gain = gain = 29
-        self.digital_gain = digital_gain = 43
-        self.constel = constel = digital.constellation_calcdist(([1,- 1]), ([0,1]), 2, 1).base()
-        self.addr = addr = "addr=192.168.20.2"
+        self.digital_gain = digital_gain = 1.0
+        self.addr = addr = "addr=192.168.10.2"
 
         ##################################################
         # Blocks
         ##################################################
         self._usrp_rf_freq_range = Range(2400e6, 2500e6, 100e3, 2475e6, 200)
         self._usrp_rf_freq_win = RangeWidget(self._usrp_rf_freq_range, self.set_usrp_rf_freq, "Rx Frequency", "counter_slider")
-        self.top_grid_layout.addWidget(self._usrp_rf_freq_win, 2,0,1,1)
+        self.top_grid_layout.addWidget(self._usrp_rf_freq_win, 3,0,1,2)
         self._gain_range = Range(0, 40, 0.5, 29, 200)
         self._gain_win = RangeWidget(self._gain_range, self.set_gain, "Rx Gain", "counter_slider")
-        self.top_grid_layout.addWidget(self._gain_win, 1,0,1,1)
-        self._digital_gain_range = Range(0, 60, 1, 43, 200)
+        self.top_grid_layout.addWidget(self._gain_win, 1,0,1,2)
+        self._digital_gain_range = Range(0, 60, 1, 1.0, 200)
         self._digital_gain_win = RangeWidget(self._digital_gain_range, self.set_digital_gain, "Digital Gain", "counter_slider")
-        self.top_grid_layout.addWidget(self._digital_gain_win, 1,1,1,1)
+        self.top_grid_layout.addWidget(self._digital_gain_win, 2,0,1,2)
         self.uhd_usrp_source_0 = uhd.usrp_source(
         	",".join((addr, "")),
         	uhd.stream_args(
@@ -97,52 +97,6 @@ class rx_application(gr.top_block, Qt.QWidget):
         self.uhd_usrp_source_0.set_center_freq(usrp_rf_freq, 0)
         self.uhd_usrp_source_0.set_gain(gain, 0)
         self.uhd_usrp_source_0.set_antenna("J1", 0)
-        self.qtgui_time_sink_x_1 = qtgui.time_sink_f(
-        	40000, #size
-        	samp_rate, #samp_rate
-        	"", #name
-        	3 #number of inputs
-        )
-        self.qtgui_time_sink_x_1.set_update_time(0.10)
-        self.qtgui_time_sink_x_1.set_y_axis(-200, 400)
-        
-        self.qtgui_time_sink_x_1.set_y_label("Amplitude", "")
-        
-        self.qtgui_time_sink_x_1.enable_tags(-1, True)
-        self.qtgui_time_sink_x_1.set_trigger_mode(qtgui.TRIG_MODE_FREE, qtgui.TRIG_SLOPE_POS, 200, 0.010, 0, "")
-        self.qtgui_time_sink_x_1.enable_autoscale(False)
-        self.qtgui_time_sink_x_1.enable_grid(False)
-        self.qtgui_time_sink_x_1.enable_control_panel(False)
-        
-        if not True:
-          self.qtgui_time_sink_x_1.disable_legend()
-        
-        labels = ["", "", "", "", "",
-                  "", "", "", "", ""]
-        widths = [1, 1, 1, 1, 1,
-                  1, 1, 1, 1, 1]
-        colors = ["blue", "red", "green", "black", "cyan",
-                  "magenta", "yellow", "dark red", "dark green", "blue"]
-        styles = [1, 1, 1, 1, 1,
-                  1, 1, 1, 1, 1]
-        markers = [-1, -1, -1, -1, -1,
-                   -1, -1, -1, -1, -1]
-        alphas = [1.0, 1.0, 1.0, 1.0, 1.0,
-                  1.0, 1.0, 1.0, 1.0, 1.0]
-        
-        for i in xrange(3):
-            if len(labels[i]) == 0:
-                self.qtgui_time_sink_x_1.set_line_label(i, "Data {0}".format(i))
-            else:
-                self.qtgui_time_sink_x_1.set_line_label(i, labels[i])
-            self.qtgui_time_sink_x_1.set_line_width(i, widths[i])
-            self.qtgui_time_sink_x_1.set_line_color(i, colors[i])
-            self.qtgui_time_sink_x_1.set_line_style(i, styles[i])
-            self.qtgui_time_sink_x_1.set_line_marker(i, markers[i])
-            self.qtgui_time_sink_x_1.set_line_alpha(i, alphas[i])
-        
-        self._qtgui_time_sink_x_1_win = sip.wrapinstance(self.qtgui_time_sink_x_1.pyqwidget(), Qt.QWidget)
-        self.top_grid_layout.addWidget(self._qtgui_time_sink_x_1_win, 0,0,1,1)
         self.qtgui_number_sink_0 = qtgui.number_sink(
                 gr.sizeof_float,
                 0,
@@ -173,7 +127,7 @@ class rx_application(gr.top_block, Qt.QWidget):
         
         self.qtgui_number_sink_0.enable_autoscale(False)
         self._qtgui_number_sink_0_win = sip.wrapinstance(self.qtgui_number_sink_0.pyqwidget(), Qt.QWidget)
-        self.top_grid_layout.addWidget(self._qtgui_number_sink_0_win, 0,2,1,1)
+        self.top_grid_layout.addWidget(self._qtgui_number_sink_0_win, 0,1,1,1)
         self.qtgui_const_sink_x_0_0 = qtgui.const_sink_c(
         	20000, #size
         	"", #name
@@ -186,7 +140,7 @@ class rx_application(gr.top_block, Qt.QWidget):
         self.qtgui_const_sink_x_0_0.enable_autoscale(False)
         self.qtgui_const_sink_x_0_0.enable_grid(False)
         
-        if not True:
+        if not False:
           self.qtgui_const_sink_x_0_0.disable_legend()
         
         labels = ["", "", "", "", "",
@@ -213,36 +167,31 @@ class rx_application(gr.top_block, Qt.QWidget):
             self.qtgui_const_sink_x_0_0.set_line_alpha(i, alphas[i])
         
         self._qtgui_const_sink_x_0_0_win = sip.wrapinstance(self.qtgui_const_sink_x_0_0.pyqwidget(), Qt.QWidget)
-        self.top_grid_layout.addWidget(self._qtgui_const_sink_x_0_0_win, 0,1,1,1)
-        self.digital_pfb_clock_sync_xxx_0 = digital.pfb_clock_sync_ccf(sps, 2*3.14/100.0, (rrc_taps), nfilts, 0, 0.5, 1)
+        self.top_grid_layout.addWidget(self._qtgui_const_sink_x_0_0_win, 0,0,1,1)
+        self.digital_pfb_clock_sync_xxx_0 = digital.pfb_clock_sync_ccf(sps, 2*3.14/100.0, (rrc_taps), nfilts, 0, 0.5, sps/4)
         self.digital_fll_band_edge_cc_0 = digital.fll_band_edge_cc(sps, eb, 45, 2*3.14/100.0)
-        self.digital_costas_loop_cc_0 = digital.costas_loop_cc(1*3.14/50.0, 2, False)
-        self.digital_correlate_and_sync_cc_0 = digital.correlate_and_sync_cc((preamble), (matched_filter), sps)
-        self.crew_packet_decoder_cb_0 = crew.packet_decoder_cb((preamble))
-        self.blocks_null_sink_0 = blocks.null_sink(gr.sizeof_char*1)
+        self.digital_costas_loop_cc_0 = digital.costas_loop_cc(1*3.14/50.0, 4, False)
+        self.digital_correlate_and_sync_cc_0 = digital.correlate_and_sync_cc((preamble_qpsk), (matched_filter), sps)
+        self.digital_cma_equalizer_cc_0 = digital.cma_equalizer_cc(15, 1, 0.01, 1)
+        self.crew_packet_decoder_cb_0 = crew.packet_decoder_cb((preamble_qpsk))
+        self.blocks_null_sink_0_0 = blocks.null_sink(gr.sizeof_gr_complex*1)
         self.blocks_multiply_const_vxx_0 = blocks.multiply_const_vcc((digital_gain, ))
-        self.blocks_file_sink_0 = blocks.file_sink(gr.sizeof_char*1, "/users/lwei/file_received.txt", False)
+        self.blocks_file_sink_0 = blocks.file_sink(gr.sizeof_char*1, "/home/lwei/Documents/temp/file_received.txt", False)
         self.blocks_file_sink_0.set_unbuffered(False)
-        self.blocks_complex_to_mag_0 = blocks.complex_to_mag(1)
-        self.blocks_complex_to_float_0 = blocks.complex_to_float(1)
 
         ##################################################
         # Connections
         ##################################################
-        self.connect((self.blocks_complex_to_float_0, 0), (self.qtgui_time_sink_x_1, 1))    
-        self.connect((self.blocks_complex_to_float_0, 1), (self.qtgui_time_sink_x_1, 2))    
-        self.connect((self.blocks_complex_to_mag_0, 0), (self.qtgui_time_sink_x_1, 0))    
         self.connect((self.blocks_multiply_const_vxx_0, 0), (self.digital_fll_band_edge_cc_0, 0))    
         self.connect((self.crew_packet_decoder_cb_0, 0), (self.blocks_file_sink_0, 0))    
-        self.connect((self.crew_packet_decoder_cb_0, 0), (self.blocks_null_sink_0, 0))    
         self.connect((self.crew_packet_decoder_cb_0, 1), (self.qtgui_number_sink_0, 0))    
+        self.connect((self.digital_cma_equalizer_cc_0, 0), (self.digital_costas_loop_cc_0, 0))    
+        self.connect((self.digital_correlate_and_sync_cc_0, 1), (self.blocks_null_sink_0_0, 0))    
+        self.connect((self.digital_correlate_and_sync_cc_0, 0), (self.digital_pfb_clock_sync_xxx_0, 0))    
         self.connect((self.digital_costas_loop_cc_0, 0), (self.crew_packet_decoder_cb_0, 0))    
         self.connect((self.digital_costas_loop_cc_0, 0), (self.qtgui_const_sink_x_0_0, 0))    
         self.connect((self.digital_fll_band_edge_cc_0, 0), (self.digital_correlate_and_sync_cc_0, 0))    
-        self.connect((self.digital_pfb_clock_sync_xxx_0, 0), (self.digital_costas_loop_cc_0, 0))    
-        self.connect((self.digital_correlate_and_sync_cc_0, 0), (self.digital_pfb_clock_sync_xxx_0, 0))    
-        self.connect((self.digital_correlate_and_sync_cc_0, 1), (self.blocks_complex_to_float_0, 0))    
-        self.connect((self.digital_correlate_and_sync_cc_0, 1), (self.blocks_complex_to_mag_0, 0))    
+        self.connect((self.digital_pfb_clock_sync_xxx_0, 0), (self.digital_cma_equalizer_cc_0, 0))    
         self.connect((self.uhd_usrp_source_0, 0), (self.blocks_multiply_const_vxx_0, 0))    
 
     def closeEvent(self, event):
@@ -257,6 +206,13 @@ class rx_application(gr.top_block, Qt.QWidget):
         self.sps = sps
         self.set_matched_filter(firdes.root_raised_cosine(self.nfilts, self.nfilts, 1, self.eb, int(11*self.sps*self.nfilts)))
         self.set_rrc_taps(firdes.root_raised_cosine(self.nfilts, self.nfilts, 1.0/float(self.sps), self.eb, 5*self.sps*self.nfilts))
+
+    def get_preamble(self):
+        return self.preamble
+
+    def set_preamble(self, preamble):
+        self.preamble = preamble
+        self.set_preamble_qpsk(map(lambda x: x*(1+1j)/pow(2,0.5), self.preamble))
 
     def get_nfilts(self):
         return self.nfilts
@@ -286,7 +242,6 @@ class rx_application(gr.top_block, Qt.QWidget):
 
     def set_samp_rate(self, samp_rate):
         self.samp_rate = samp_rate
-        self.qtgui_time_sink_x_1.set_samp_rate(self.samp_rate)
         self.uhd_usrp_source_0.set_samp_rate(self.samp_rate)
 
     def get_rrc_taps(self):
@@ -296,11 +251,11 @@ class rx_application(gr.top_block, Qt.QWidget):
         self.rrc_taps = rrc_taps
         self.digital_pfb_clock_sync_xxx_0.set_taps((self.rrc_taps))
 
-    def get_preamble(self):
-        return self.preamble
+    def get_preamble_qpsk(self):
+        return self.preamble_qpsk
 
-    def set_preamble(self, preamble):
-        self.preamble = preamble
+    def set_preamble_qpsk(self, preamble_qpsk):
+        self.preamble_qpsk = preamble_qpsk
 
     def get_matched_filter(self):
         return self.matched_filter
@@ -321,12 +276,6 @@ class rx_application(gr.top_block, Qt.QWidget):
     def set_digital_gain(self, digital_gain):
         self.digital_gain = digital_gain
         self.blocks_multiply_const_vxx_0.set_k((self.digital_gain, ))
-
-    def get_constel(self):
-        return self.constel
-
-    def set_constel(self, constel):
-        self.constel = constel
 
     def get_addr(self):
         return self.addr
