@@ -7,10 +7,11 @@ halo_init_tx(halo);
 
 %% Generate arbitrary waveform
 T=10000;%total number of samples
-N=T/4;%signal burst length
+N=T/2;%signal burst length
 Nu=N/4;%number of used subcarriers in OFDM signal
 
 tx_signal=[ifft([sign(randn(Nu,1))+1i*sign(randn(Nu,1));zeros(N-Nu,1)]);zeros(T-N,1)];
+
 figure(1);
 subplot(2,1,1);
 plot([real(tx_signal) imag(tx_signal)])
