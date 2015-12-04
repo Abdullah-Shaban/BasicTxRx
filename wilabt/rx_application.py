@@ -2,7 +2,7 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Rx Application
-# Generated: Mon Oct  5 14:55:59 2015
+# Generated: Wed Dec  2 17:27:45 2015
 ##################################################
 
 if __name__ == '__main__':
@@ -71,8 +71,8 @@ class rx_application(gr.top_block, Qt.QWidget):
         self.preamble_qpsk = preamble_qpsk = map(lambda x: x*(1+1j)/pow(2,0.5), preamble)
         self.matched_filter = matched_filter = firdes.root_raised_cosine(nfilts, nfilts, 1, eb, int(11*sps*nfilts))
         self.gain = gain = 29
-        self.digital_gain = digital_gain = 1.0
-        self.addr = addr = "addr=192.168.10.2"
+        self.digital_gain = digital_gain = 15
+        self.addr = addr = "addr=192.168.50.2"
 
         ##################################################
         # Blocks
@@ -83,7 +83,7 @@ class rx_application(gr.top_block, Qt.QWidget):
         self._gain_range = Range(0, 40, 0.5, 29, 200)
         self._gain_win = RangeWidget(self._gain_range, self.set_gain, "Rx Gain", "counter_slider")
         self.top_grid_layout.addWidget(self._gain_win, 1,0,1,2)
-        self._digital_gain_range = Range(0, 60, 1, 1.0, 200)
+        self._digital_gain_range = Range(0, 60, 1, 15, 200)
         self._digital_gain_win = RangeWidget(self._digital_gain_range, self.set_digital_gain, "Digital Gain", "counter_slider")
         self.top_grid_layout.addWidget(self._digital_gain_win, 2,0,1,2)
         self.uhd_usrp_source_0 = uhd.usrp_source(
@@ -175,15 +175,14 @@ class rx_application(gr.top_block, Qt.QWidget):
         self.digital_cma_equalizer_cc_0 = digital.cma_equalizer_cc(15, 1, 0.01, 1)
         self.crew_packet_decoder_cb_0 = crew.packet_decoder_cb((preamble_qpsk))
         self.blocks_null_sink_0_0 = blocks.null_sink(gr.sizeof_gr_complex*1)
+        self.blocks_null_sink_0 = blocks.null_sink(gr.sizeof_char*1)
         self.blocks_multiply_const_vxx_0 = blocks.multiply_const_vcc((digital_gain, ))
-        self.blocks_file_sink_0 = blocks.file_sink(gr.sizeof_char*1, "/home/lwei/Documents/temp/file_received.txt", False)
-        self.blocks_file_sink_0.set_unbuffered(False)
 
         ##################################################
         # Connections
         ##################################################
         self.connect((self.blocks_multiply_const_vxx_0, 0), (self.digital_fll_band_edge_cc_0, 0))    
-        self.connect((self.crew_packet_decoder_cb_0, 0), (self.blocks_file_sink_0, 0))    
+        self.connect((self.crew_packet_decoder_cb_0, 0), (self.blocks_null_sink_0, 0))    
         self.connect((self.crew_packet_decoder_cb_0, 1), (self.qtgui_number_sink_0, 0))    
         self.connect((self.digital_cma_equalizer_cc_0, 0), (self.digital_costas_loop_cc_0, 0))    
         self.connect((self.digital_correlate_and_sync_cc_0, 1), (self.blocks_null_sink_0_0, 0))    

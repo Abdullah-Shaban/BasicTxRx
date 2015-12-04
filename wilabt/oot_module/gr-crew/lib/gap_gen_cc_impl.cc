@@ -57,6 +57,7 @@ namespace gr {
     	work_called = 0 ; 
     	pkt_id = 0 ;
     	pkt_len = (64 + 32 + 50*8 + 4*8 +3*8)*4 ; 
+    	bps = 2 ; // bit per symbol, use 1 for bpsk, 2 for qpsk 
     }
 
     /*
@@ -198,9 +199,9 @@ namespace gr {
 				}
 				
 			case STATE_FIND_PKT_OFFSET:
-				//print_state(d_state) ;
+				print_state(d_state) ;
 				for(int i=0; i<tags.size(); i++ ){
-					pkt_len = pmt::to_uint64(tags[i].value) * 4 * 8; 
+					pkt_len = pmt::to_uint64(tags[i].value) * 4 * 8 /bps ; 
 					unsigned pkt_offset_temp = tags[i].offset - nitems_read(0) ; 
 					// temp solution
 					pkt_offset = pkt_offset_temp ; 
@@ -225,7 +226,7 @@ namespace gr {
 			
 			
 			case STATE_CHECK_SP:
-				//print_state(d_state) ;
+				print_state(d_state) ;
 				if( nsp_in >= pkt_offset + pkt_len){
 					for(int i=0; i<pkt_len ; i++){
 						out[i] = in[pkt_offset+i] ; 
@@ -242,7 +243,7 @@ namespace gr {
 			
 			
 			case STATE_SENT:
-				//print_state(d_state) ;
+				print_state(d_state) ;
 				d_running = false ; 
 				output_produced = pkt_len ; 
 				input_consumed = pkt_len+pkt_offset;

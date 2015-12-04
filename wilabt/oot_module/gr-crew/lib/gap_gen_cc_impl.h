@@ -34,6 +34,7 @@ namespace gr {
       size_t pkt_len ; 
       size_t pkt_id ; 
       int d_state;  
+      size_t bps ;
 
      public:
       gap_gen_cc_impl(bool running);

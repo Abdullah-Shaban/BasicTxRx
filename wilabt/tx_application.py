@@ -2,7 +2,7 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Tx Application
-# Generated: Mon Oct  5 14:56:10 2015
+# Generated: Wed Dec  2 17:25:11 2015
 ##################################################
 
 if __name__ == '__main__':
@@ -76,7 +76,7 @@ class tx_application(gr.top_block, Qt.QWidget):
         self.digital_gain = digital_gain = 1.0/4
         self.crc_len = crc_len = 4
         self.bps = bps = 2
-        self.addr = addr = "addr=192.168.10.4"
+        self.addr = addr = "addr=192.168.60.2"
 
         ##################################################
         # Blocks
@@ -141,6 +141,7 @@ class tx_application(gr.top_block, Qt.QWidget):
         self.top_layout.addWidget(self._qtgui_freq_sink_x_0_win)
         self.qpsk_preamp_to_bits = blocks.vector_source_b(map(lambda x: int((x*(1j-1)/pow(2,0.5)).real+1), preamble_qpsk), True, 1, [])
         self.padded_bits = blocks.vector_source_b((0,0,0,0,0,0,0,0), True, 1, [])
+        (self.padded_bits).set_block_alias("padded bits")
         self.digital_packet_headergenerator_bb_default_0 = digital.packet_headergenerator_bb(header_len*8, length_tag_key)
         self.digital_crc32_bb_0 = digital.crc32_bb(False, length_tag_key)
         self.digital_constellation_modulator_0 = digital.generic_mod(
@@ -158,7 +159,7 @@ class tx_application(gr.top_block, Qt.QWidget):
         self.blocks_pack_k_bits_bb_0_1 = blocks.pack_k_bits_bb(8)
         self.blocks_pack_k_bits_bb_0_0 = blocks.pack_k_bits_bb(8)
         self.blocks_multiply_const_vxx_0 = blocks.multiply_const_vcc((digital_gain, ))
-        self.blocks_file_source_0 = blocks.file_source(gr.sizeof_char*1, "/home/lwei/Documents/GITFolders/WirelessTestbedAcademy/BasicTxRx/wilabt/file_sent.txt", True)
+        self.blocks_file_source_0 = blocks.file_source(gr.sizeof_char*1, "/users/lwei/GITfolder/wirelessacademy/BasicTxRx/wilabt/file_sent.txt", True)
 
         ##################################################
         # Connections
@@ -223,7 +224,7 @@ class tx_application(gr.top_block, Qt.QWidget):
 
     def set_preamble_qpsk(self, preamble_qpsk):
         self.preamble_qpsk = preamble_qpsk
-        self.qpsk_preamp_to_bits.set_data(map(lambda x: int((x*(1j-1)/pow(2,0.5)).real+1), self.preamble_qpsk))
+        self.qpsk_preamp_to_bits.set_data(map(lambda x: int((x*(1j-1)/pow(2,0.5)).real+1), self.preamble_qpsk),[])
 
     def get_payload_size(self):
         return self.payload_size

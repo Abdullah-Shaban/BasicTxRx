@@ -36,7 +36,7 @@ class db_channel_selector(gr.sync_block):
         # construct the query 
         self.qstatement = string.Template("select * from $tbname s where s.oml_ts_server=(select max(oml_ts_server) from $tbname )  ;").substitute({'tbname':tbname})
         try:
-            self.conn = psycopg2.connect("dbname='%s' user='wilabuser' host='10.11.31.5' password='wilabuser'" % dbname)
+            self.conn = psycopg2.connect("dbname='%s' user='wilabuser' host='ops.wilab2.ilabt.iminds.be' password='wilabuser'" % dbname)
         except:
             print "I am unable to connect to the database"    
             
