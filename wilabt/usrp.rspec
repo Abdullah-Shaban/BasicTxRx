@@ -1,0 +1,92 @@
+<?xml version='1.0'?>
+<rspec xmlns="http://www.geni.net/resources/rspec/3" type="request" generated_by="jFed RSpec Editor" generated="2015-12-08T18:00:05.507+01:00" xmlns:emulab="http://www.protogeni.net/resources/rspec/ext/emulab/1" xmlns:jfedBonfire="http://jfed.iminds.be/rspec/ext/jfed-bonfire/1" xmlns:delay="http://www.protogeni.net/resources/rspec/ext/delay/1" xmlns:jfed-command="http://jfed.iminds.be/rspec/ext/jfed-command/1" xmlns:client="http://www.protogeni.net/resources/rspec/ext/client/1" xmlns:jfed-ssh-keys="http://jfed.iminds.be/rspec/ext/jfed-ssh-keys/1" xmlns:jfed="http://jfed.iminds.be/rspec/ext/jfed/1" xmlns:sharedvlan="http://www.protogeni.net/resources/rspec/ext/shared-vlan/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.geni.net/resources/rspec/3 http://www.geni.net/resources/rspec/3/request.xsd ">
+  <node client_id="server1" exclusive="true" component_manager_id="urn:publicid:IDN+wilab2.ilabt.iminds.be+authority+cm" component_id="urn:publicid:IDN+wilab2.ilabt.iminds.be+node+server1">
+    <sliver_type name="raw-pc"/>
+    <services>
+      <execute shell="sh" command="sudo sysctl net.core.wmem_maxnet.core.wmem_max = 1048576"/>
+      <execute shell="sh" command="sudo sysctl net.core.rmem_maxnet.core.rmem_max = 50000000"/>
+    </services>
+    <location xmlns="http://jfed.iminds.be/rspec/ext/jfed/1" x="711.5" y="366.5"/>
+    <interface client_id="server1:if0">
+      <ip address="192.168.20.1" netmask="255.255.255.0" type="ipv4"/>
+    </interface>
+    <interface client_id="server1:if1">
+      <ip address="192.168.30.1" netmask="255.255.255.0" type="ipv4"/>
+    </interface>
+    <interface client_id="server1:if2">
+      <ip address="192.168.40.1" netmask="255.255.255.0" type="ipv4"/>
+    </interface>
+    <interface client_id="server1:if3">
+      <ip address="192.168.50.1" netmask="255.255.255.0" type="ipv4"/>
+    </interface>
+    <interface client_id="server1:if4">
+      <ip address="192.168.60.1" netmask="255.255.255.0" type="ipv4"/>
+    </interface>
+  </node>
+  <node client_id="usrp2" exclusive="true" component_manager_id="urn:publicid:IDN+wilab2.ilabt.iminds.be+authority+cm" component_id="urn:publicid:IDN+wilab2.ilabt.iminds.be+node+usrp2">
+    <sliver_type name="raw-pc"/>
+    <location xmlns="http://jfed.iminds.be/rspec/ext/jfed/1" x="456.0" y="241.5"/>
+    <interface client_id="usrp2:if0">
+      <ip address="192.168.20.2" netmask="255.255.255.0" type="ipv4"/>
+    </interface>
+  </node>
+  <node client_id="usrp3" exclusive="true" component_manager_id="urn:publicid:IDN+wilab2.ilabt.iminds.be+authority+cm" component_id="urn:publicid:IDN+wilab2.ilabt.iminds.be+node+usrp3">
+    <sliver_type name="raw-pc"/>
+    <location xmlns="http://jfed.iminds.be/rspec/ext/jfed/1" x="998.0" y="239.5"/>
+    <interface client_id="usrp3:if0">
+      <ip address="192.168.30.2" netmask="255.255.255.0" type="ipv4"/>
+    </interface>
+  </node>
+  <node client_id="usrp4" exclusive="true" component_manager_id="urn:publicid:IDN+wilab2.ilabt.iminds.be+authority+cm" component_id="urn:publicid:IDN+wilab2.ilabt.iminds.be+node+usrp4">
+    <sliver_type name="raw-pc"/>
+    <location xmlns="http://jfed.iminds.be/rspec/ext/jfed/1" x="1002.0" y="548.5"/>
+    <interface client_id="usrp4:if0">
+      <ip address="192.168.40.2" netmask="255.255.255.0" type="ipv4"/>
+    </interface>
+  </node>
+  <node client_id="usrp5" exclusive="true" component_manager_id="urn:publicid:IDN+wilab2.ilabt.iminds.be+authority+cm" component_id="urn:publicid:IDN+wilab2.ilabt.iminds.be+node+usrp5">
+    <sliver_type name="raw-pc"/>
+    <location xmlns="http://jfed.iminds.be/rspec/ext/jfed/1" x="740.5" y="561.5"/>
+    <interface client_id="usrp5:if0">
+      <ip address="192.168.50.2" netmask="255.255.255.0" type="ipv4"/>
+    </interface>
+  </node>
+  <node client_id="usrp6" exclusive="true" component_manager_id="urn:publicid:IDN+wilab2.ilabt.iminds.be+authority+cm" component_id="urn:publicid:IDN+wilab2.ilabt.iminds.be+node+usrp6">
+    <sliver_type name="raw-pc"/>
+    <location xmlns="http://jfed.iminds.be/rspec/ext/jfed/1" x="462.5" y="543.5"/>
+    <interface client_id="usrp6:if0">
+      <ip address="192.168.60.2" netmask="255.255.255.0" type="ipv4"/>
+    </interface>
+  </node>
+  <link client_id="link2">
+    <component_manager name="urn:publicid:IDN+wilab2.ilabt.iminds.be+authority+cm"/>
+    <interface_ref client_id="server1:if0"/>
+    <interface_ref client_id="usrp2:if0"/>
+    <link_type name="lan"/>
+  </link>
+  <link client_id="link3">
+    <component_manager name="urn:publicid:IDN+wilab2.ilabt.iminds.be+authority+cm"/>
+    <interface_ref client_id="server1:if1"/>
+    <interface_ref client_id="usrp3:if0"/>
+    <link_type name="lan"/>
+  </link>
+  <link client_id="link4">
+    <component_manager name="urn:publicid:IDN+wilab2.ilabt.iminds.be+authority+cm"/>
+    <interface_ref client_id="server1:if2"/>
+    <interface_ref client_id="usrp4:if0"/>
+    <link_type name="lan"/>
+  </link>
+  <link client_id="link5">
+    <component_manager name="urn:publicid:IDN+wilab2.ilabt.iminds.be+authority+cm"/>
+    <interface_ref client_id="server1:if3"/>
+    <interface_ref client_id="usrp5:if0"/>
+    <link_type name="lan"/>
+  </link>
+  <link client_id="link6">
+    <component_manager name="urn:publicid:IDN+wilab2.ilabt.iminds.be+authority+cm"/>
+    <interface_ref client_id="server1:if4"/>
+    <interface_ref client_id="usrp6:if0"/>
+    <link_type name="lan"/>
+  </link>
+  <jfed-command:experimentBarrierSegment orderNumber="0" tag="Barrier segment 0"/>
+</rspec>
