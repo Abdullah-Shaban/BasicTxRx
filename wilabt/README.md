@@ -10,10 +10,16 @@ Requirements:
 
 Common steps:
 -----------------------
+Using the Old emulab appraoch:
 The 'txrx_application.ns' file describes the topology of the USRPs and the host server on the testbed.
-    $ reserve 2 USRP's and 1 server5P (5P means server with 5 eithernet ports ) on the testbed reservation page
+    $ reserve 2 USRP's and 1 server5P (5P means server with 5 eithernet ports ) at https://www.wilab2.ilabt.iminds.be/reservation/
     $ define an emulab experiment using the txrx_application.ns file (if it does not exist)
     $ adapt the USRP's and server in the script according to the reservation and swap in the experiment
+Using the jFed interface:
+    $ reserve 5 USRP's and 1 server5P at https://www.wilab2.ilabt.iminds.be:12369/reservation/sfareservation.php3
+    $ load the experiment as defined by usrp.rspec file into jFed GUI
+    $ adapt the experiment according to reservation and run the experiment
+Common steps:
     $ log into the reserved server with your w-iLab.t account graphically (with -X option if using ssh client)
     $ verify the connection between the server and USRP using the 'uhd_usrp_probe' command
     $ launch gnuradio companion (GRC) on the server by running the command: gnuradio-companion
